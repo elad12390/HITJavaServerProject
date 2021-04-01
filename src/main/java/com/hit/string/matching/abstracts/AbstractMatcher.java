@@ -1,7 +1,7 @@
 package main.java.com.hit.string.matching.abstracts;
-import main.java.com.hit.string.matching.interfaces.StringMatcher;
+import main.java.com.hit.string.matching.interfaces.IStringMatcher;
 
-public abstract class AbstractMatcher implements StringMatcher {
+public abstract class AbstractMatcher implements IStringMatcher {
     public Integer match(String searchWord, String input) {
         if (input.length() < searchWord.length()) {
             return -1;

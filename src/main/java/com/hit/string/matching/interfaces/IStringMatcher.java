@@ -2,7 +2,7 @@ package main.java.com.hit.string.matching.interfaces;
 
 import java.util.Set;
 
-public interface StringMatcher {
+public interface IStringMatcher {
     /**
      * Function to return a matching index of the searchWord in the input string
      * @param searchWord The word to search for
