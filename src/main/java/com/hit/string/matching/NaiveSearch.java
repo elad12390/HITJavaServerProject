@@ -8,8 +8,8 @@ public class NaiveSearch extends AbstractMatcher {
         if (edgeCases != null) return edgeCases;
 
         for (int i = 0; i < input.length(); i++) {
-            int j = 0;
-            for (j = 0; j < searchWord.length(); j++) {
+            int j;
+            for (j = 0; (i + j) < searchWord.length(); j++) {
                 if (input.charAt(i+j) != searchWord.charAt(j)) {
                     // location i is wrong.
                     break;
