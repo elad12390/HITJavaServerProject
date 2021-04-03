@@ -1,4 +1,5 @@
 package main.java.com.hit.stringmatching.abstracts;
+
 import main.java.com.hit.stringmatching.interfaces.IStringMatcher;
 
 public abstract class AbstractMatcher implements IStringMatcher {

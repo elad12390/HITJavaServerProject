@@ -1,4 +1,5 @@
 package main.java.com.hit.stringmatching;
+
 import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
 
 public class KmpSearch extends AbstractMatcher {
@@ -8,12 +9,11 @@ public class KmpSearch extends AbstractMatcher {
         int i = 1;
         lps[0] = 0;
         while (i < patLen) {
-            if(pat.charAt(i)==pat.charAt(lenLongestPs)) {
+            if (pat.charAt(i) == pat.charAt(lenLongestPs)) {
                 lenLongestPs++;
-                lps[i]=lenLongestPs;
+                lps[i] = lenLongestPs;
                 i++;
-            }
-            else {
+            } else {
                 if (lenLongestPs != 0) {
                     lenLongestPs = lps[lenLongestPs - 1];
                 } else {

@@ -4,7 +4,6 @@ import main.java.com.hit.stringmatching.KmpSearch;
 import main.java.com.hit.stringmatching.NaiveSearch;
 import main.java.com.hit.stringmatching.RobinKarpSearch;
 import main.java.com.hit.stringmatching.interfaces.IStringMatcher;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -13,11 +12,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class StringMatchTester {
     private final IStringMatcher stringMatcher;
+
+    public StringMatchTester(IStringMatcher matcher) {
+        this.stringMatcher = matcher;
+    }
 
     @Parameterized.Parameters
     public static Collection<IStringMatcher> stringMatchers() {
@@ -28,14 +32,10 @@ public class StringMatchTester {
         return list;
     }
 
-    public StringMatchTester(IStringMatcher matcher) {
-        this.stringMatcher = matcher;
-    }
-
     @Test
     public void testStringMatcher_DoesNotExist() {
         Integer result = stringMatcher.match("ama", "obam");
-        assertEquals((Integer)(-1), result);
+        assertEquals((Integer) (-1), result);
     }
 
     @Test
@@ -44,8 +44,8 @@ public class StringMatchTester {
 
         String input = generateRandomString(wordLen);
         String searchWord = generateRandomString(wordLen + 1);
-        Integer result = stringMatcher.match(searchWord,  input);
-        assertEquals((Integer)(-1), result);
+        Integer result = stringMatcher.match(searchWord, input);
+        assertEquals((Integer) (-1), result);
     }
 
     @Test
@@ -55,8 +55,8 @@ public class StringMatchTester {
         String input = generateRandomString(wordLen);
         String searchWord = generateRandomString(wordLen);
 
-        Integer result = stringMatcher.match(searchWord,  input);
-        assertEquals((Integer)input.indexOf(searchWord), result);
+        Integer result = stringMatcher.match(searchWord, input);
+        assertEquals((Integer) input.indexOf(searchWord), result);
     }
 
     @Test
@@ -64,8 +64,8 @@ public class StringMatchTester {
         String input = generateRandomString(Math.abs(new Random().nextInt(10000)));
         String searchWord = generateRandomString(Math.abs(new Random().nextInt(100)));
 
-        Integer result = stringMatcher.match(searchWord,  input);
-        assertEquals((Integer)input.indexOf(searchWord), result);
+        Integer result = stringMatcher.match(searchWord, input);
+        assertEquals((Integer) input.indexOf(searchWord), result);
     }
 
     private String generateRandomString(int length) {
