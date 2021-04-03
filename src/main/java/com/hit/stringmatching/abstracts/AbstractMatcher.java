@@ -1,5 +1,5 @@
-package main.java.com.hit.string.matching.abstracts;
-import main.java.com.hit.string.matching.interfaces.IStringMatcher;
+package main.java.com.hit.stringmatching.abstracts;
+import main.java.com.hit.stringmatching.interfaces.IStringMatcher;
 
 public abstract class AbstractMatcher implements IStringMatcher {
     public Integer match(String searchWord, String input) {
@@ -10,5 +10,5 @@ public abstract class AbstractMatcher implements IStringMatcher {
         }
 
         return null;
-    };
+    }
 }

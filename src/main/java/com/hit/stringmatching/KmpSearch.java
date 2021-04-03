@@ -1,5 +1,5 @@
-package main.java.com.hit.string.matching;
-import main.java.com.hit.string.matching.abstracts.AbstractMatcher;
+package main.java.com.hit.stringmatching;
+import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
 
 public class KmpSearch extends AbstractMatcher {
     private int[] lpsArray(String pat, int[] lps) {
@@ -52,12 +52,4 @@ public class KmpSearch extends AbstractMatcher {
         }
         return -1;
     }
-
-
-    public static void main(String[] args) {
-        String txt="AAAAAABBABABSDJDCABSNSJ";
-        String pat="DJDCA";
-        new KmpSearch().match(pat,txt);
-    }
-
 }

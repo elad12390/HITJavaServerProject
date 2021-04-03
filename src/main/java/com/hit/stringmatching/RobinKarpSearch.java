@@ -1,14 +1,8 @@
-package main.java.com.hit.string.matching;
+package main.java.com.hit.stringmatching;
 
-import main.java.com.hit.string.matching.abstracts.AbstractMatcher;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
 
 public class RobinKarpSearch extends AbstractMatcher {
-    long qPrime = 999999000001L;
     long bMult = 512;
 
     @Override

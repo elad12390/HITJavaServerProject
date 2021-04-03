@@ -1,5 +1,5 @@
-package main.java.com.hit.string.matching;
-import main.java.com.hit.string.matching.abstracts.AbstractMatcher;
+package main.java.com.hit.stringmatching;
+import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
 
 public class NaiveSearch extends AbstractMatcher {
     @Override

@@ -1,4 +1,4 @@
-package main.java.com.hit.string.matching.interfaces;
+package main.java.com.hit.stringmatching.interfaces;
 
 import java.util.Set;
 
@@ -9,5 +9,5 @@ public interface IStringMatcher {
      * @param input The input text to search in
      * @return The index of the first occurrence of the search word
      */
-    public Integer match(String searchWord, String input); // searchWord="elad" input="fdslakjaskjdfkjasehdelad"
+    Integer match(String searchWord, String input); // searchWord="elad" input="fdslakjaskjdfkjasehdelad"
 }

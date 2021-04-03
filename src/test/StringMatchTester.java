@@ -1,9 +1,9 @@
 package test;
 
-import main.java.com.hit.string.matching.KmpSearch;
-import main.java.com.hit.string.matching.NaiveSearch;
-import main.java.com.hit.string.matching.RobinKarpSearch;
-import main.java.com.hit.string.matching.interfaces.IStringMatcher;
+import main.java.com.hit.stringmatching.KmpSearch;
+import main.java.com.hit.stringmatching.NaiveSearch;
+import main.java.com.hit.stringmatching.RobinKarpSearch;
+import main.java.com.hit.stringmatching.interfaces.IStringMatcher;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class StringMatchTester {
-    private IStringMatcher stringMatcher;
+    private final IStringMatcher stringMatcher;
 
     @Parameterized.Parameters
     public static Collection<IStringMatcher> stringMatchers() {
