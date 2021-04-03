@@ -1,8 +1,8 @@
-package main.java.com.hit.stringmatching;
+package main.java.com.hit.stringmatching.implementations;
 
-import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
+import main.java.com.hit.stringmatching.abstracts.AbstractAlgoMatcher;
 
-public class NaiveSearch extends AbstractMatcher {
+public class NaiveAlgoMatcherImpl extends AbstractAlgoMatcher {
     @Override
     public Integer match(String searchWord, String input) {
         Integer edgeCases = super.match(searchWord, input);

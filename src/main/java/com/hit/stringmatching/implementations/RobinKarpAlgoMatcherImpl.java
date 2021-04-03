@@ -1,8 +1,8 @@
-package main.java.com.hit.stringmatching;
+package main.java.com.hit.stringmatching.implementations;
 
-import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
+import main.java.com.hit.stringmatching.abstracts.AbstractAlgoMatcher;
 
-public class RobinKarpSearch extends AbstractMatcher {
+public class RobinKarpAlgoMatcherImpl extends AbstractAlgoMatcher {
     long bMult = 512;
 
     @Override

@@ -1,6 +1,6 @@
 package main.java.com.hit.stringmatching.interfaces;
 
-public interface IStringMatcher {
+public interface IAlgoStringMatcher {
     /**
      * Function to return a matching index of the searchWord in the input string
      *

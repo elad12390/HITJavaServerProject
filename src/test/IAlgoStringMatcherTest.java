@@ -1,9 +1,9 @@
 package test;
 
-import main.java.com.hit.stringmatching.KmpSearch;
-import main.java.com.hit.stringmatching.NaiveSearch;
-import main.java.com.hit.stringmatching.RobinKarpSearch;
-import main.java.com.hit.stringmatching.interfaces.IStringMatcher;
+import main.java.com.hit.stringmatching.implementations.KnuthMorrisPrattAlgoMatcherImpl;
+import main.java.com.hit.stringmatching.implementations.NaiveAlgoMatcherImpl;
+import main.java.com.hit.stringmatching.implementations.RobinKarpAlgoMatcherImpl;
+import main.java.com.hit.stringmatching.interfaces.IAlgoStringMatcher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -16,19 +16,19 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class StringMatchTester {
-    private final IStringMatcher stringMatcher;
+public class IAlgoStringMatcherTest {
+    private final IAlgoStringMatcher stringMatcher;
 
-    public StringMatchTester(IStringMatcher matcher) {
+    public IAlgoStringMatcherTest(IAlgoStringMatcher matcher) {
         this.stringMatcher = matcher;
     }
 
     @Parameterized.Parameters
-    public static Collection<IStringMatcher> stringMatchers() {
-        List<IStringMatcher> list = new ArrayList<>();
-        list.add(new KmpSearch());
-        list.add(new NaiveSearch());
-        list.add(new RobinKarpSearch());
+    public static Collection<IAlgoStringMatcher> stringMatchers() {
+        List<IAlgoStringMatcher> list = new ArrayList<>();
+        list.add(new KnuthMorrisPrattAlgoMatcherImpl());
+        list.add(new NaiveAlgoMatcherImpl());
+        list.add(new RobinKarpAlgoMatcherImpl());
         return list;
     }
 

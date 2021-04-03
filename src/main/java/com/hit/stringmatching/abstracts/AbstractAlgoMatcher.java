@@ -1,8 +1,8 @@
 package main.java.com.hit.stringmatching.abstracts;
 
-import main.java.com.hit.stringmatching.interfaces.IStringMatcher;
+import main.java.com.hit.stringmatching.interfaces.IAlgoStringMatcher;
 
-public abstract class AbstractMatcher implements IStringMatcher {
+public abstract class AbstractAlgoMatcher implements IAlgoStringMatcher {
     public Integer match(String searchWord, String input) {
         if (input.length() < searchWord.length()) {
             return -1;

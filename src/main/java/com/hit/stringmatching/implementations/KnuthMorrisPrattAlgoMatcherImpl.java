@@ -1,8 +1,8 @@
-package main.java.com.hit.stringmatching;
+package main.java.com.hit.stringmatching.implementations;
 
-import main.java.com.hit.stringmatching.abstracts.AbstractMatcher;
+import main.java.com.hit.stringmatching.abstracts.AbstractAlgoMatcher;
 
-public class KmpSearch extends AbstractMatcher {
+public class KnuthMorrisPrattAlgoMatcherImpl extends AbstractAlgoMatcher {
     private int[] lpsArray(String pat, int[] lps) {
         int patLen = pat.length();
         int lenLongestPs = 0;
