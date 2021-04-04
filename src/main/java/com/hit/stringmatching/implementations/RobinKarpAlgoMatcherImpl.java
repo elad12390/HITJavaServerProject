@@ -4,6 +4,7 @@ import main.java.com.hit.stringmatching.abstracts.AbstractAlgoMatcher;
 
 public class RobinKarpAlgoMatcherImpl extends AbstractAlgoMatcher {
     long bMult = 512;
+    long qModulo = 100000;
 
     @Override
     public Integer match(String searchWord, String input) {
@@ -12,11 +13,12 @@ public class RobinKarpAlgoMatcherImpl extends AbstractAlgoMatcher {
 
         long hashedWord = 0;
         long highestPow = 1;
-        for (Character c : searchWord.toCharArray()) {
+        for (char c : searchWord.toCharArray()) {
             hashedWord *= bMult;
-            hashedWord += c.hashCode();
+            hashedWord += c;
             highestPow *= bMult;
         }
+        hashedWord %= qModulo;
 
         long hashedSubText = 0;
         for (int i = 0; i <= input.length(); i++) {
@@ -28,7 +30,9 @@ public class RobinKarpAlgoMatcherImpl extends AbstractAlgoMatcher {
                     hashedSubText -= highestPow * (input.charAt(i - searchWord.length()));
                 }
                 hashedSubText *= bMult;
+                hashedSubText %= qModulo;
                 hashedSubText += input.charAt(i);
+                hashedSubText %= qModulo;
             }
         }
 
