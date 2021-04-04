@@ -3,7 +3,7 @@ package main.java.com.hit.stringmatching.implementations;
 import main.java.com.hit.stringmatching.abstracts.AbstractAlgoMatcher;
 
 public class RobinKarpAlgoMatcherImpl extends AbstractAlgoMatcher {
-    long bMult = 512;
+    long bMult = 5120;
 
     @Override
     public Integer match(String searchWord, String input) {

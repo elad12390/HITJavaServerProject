@@ -41,6 +41,8 @@ public class KnuthMorrisPrattAlgoMatcherImpl extends AbstractAlgoMatcher {
                 i++;
             }
             if (j == S) {
+                System.out.println("Found the SearchWord "
+                        + "at index " + (i - j));
                 j = lps[j - 1];
             } else if (i < N && searchWord.charAt(j) != input.charAt(i)) {
                 if (j != 0) {
@@ -52,4 +54,5 @@ public class KnuthMorrisPrattAlgoMatcherImpl extends AbstractAlgoMatcher {
         }
         return -1;
     }
+
 }
