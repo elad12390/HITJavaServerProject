@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../HitStringMatching/out/artifacts/HitStringMatching_jar/HitStringMatching.jar!/" />
+          <root url="jar://$MODULE_DIR$/deps/HitStringMatching.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
