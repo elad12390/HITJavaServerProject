@@ -5,7 +5,8 @@ import java.util.Map;
 
 public interface IDatabase {
     public String connectionString();
-    public <T> List<Map<String, Object>> selectAllFrom(String table);
+    public <T> List<T> selectAllFrom(String table, T data);
+    public <T> T getById(String table, int id, T data);
     public <T> T addToTable(String table, T item);
     public boolean deleteFromTable(String table, int id);
 }

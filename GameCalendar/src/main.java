@@ -1,7 +1,9 @@
 import com.mysql.cj.xdevapi.JsonParser;
 import com.mysql.cj.xdevapi.JsonString;
 import com.sun.net.httpserver.HttpServer;
+import controllers.GameController;
 import main.java.com.hit.stringmatching.implementations.KnuthMorrisPrattAlgoMatcherImpl;
+import models.GameModel;
 import org.json.simple.JSONValue;
 import repositories.Database;
 
@@ -13,10 +15,12 @@ public class main {
     public static Database db;
     public static Boolean finishedSetup = false;
     public static final int serverPort = 9110;
+    private static GameController gameController;
 
     private static void setup() {
         try {
-            main.db = new Database("jdbc:mysql://localhost:3306/?user=root", "root" , "1234");
+            main.db = new Database("jdbc:mysql://localhost:3306/?user=root", "root" , "1234", "game-calendar");
+            main.gameController = new GameController();
         } catch (Exception e) {
             System.out.println("[ERROR] Could not connect to database!");
             throw e;
@@ -31,18 +35,9 @@ public class main {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
 
-        // Create contexts in controller....
-        server.createContext("/api/games", (exchange -> {
-            String respText = JSONValue.toJSONString(db.selectAllFrom("games"));
+        // Controller contexts
+        gameController.setControllerPaths(server);
 
-            exchange.sendResponseHeaders(200, respText.getBytes().length);
-
-            OutputStream output = exchange.getResponseBody();
-            output.write(respText.getBytes());
-            output.flush();
-
-            exchange.close();
-        }));
 
         server.setExecutor(null); // creates a default executor
         server.start();

@@ -1,4 +1,4 @@
-package test;
+package main.test.com.hit.stringmatching;
 
 import main.java.com.hit.stringmatching.implementations.KnuthMorrisPrattAlgoMatcherImpl;
 import main.java.com.hit.stringmatching.implementations.NaiveAlgoMatcherImpl;
