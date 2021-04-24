@@ -1,14 +1,8 @@
 package main.java.com.hit.gamecalendar.common.annotations;
 
 public enum EHttpMethod {
-    None,
-    Get,
-    Post,
-    Put,
-    Delete,
-    Options,
-    Patch,
-    Head;
+    None, Get, Post, Put,
+    Delete, Options, Patch, Head;
     public static EHttpMethod getFromString(String methodStr) {
         return switch (methodStr) {
             case "GET" -> EHttpMethod.Get;

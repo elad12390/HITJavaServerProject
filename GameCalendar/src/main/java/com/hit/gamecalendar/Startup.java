@@ -1,8 +1,8 @@
 package main.java.com.hit.gamecalendar;
 
 import com.sun.net.httpserver.HttpServer;
-import main.java.com.hit.gamecalendar.common.Logger;
-import main.java.com.hit.gamecalendar.common.interfaces.ILogger;
+import main.java.com.hit.gamecalendar.common.logger.Logger;
+import main.java.com.hit.gamecalendar.common.logger.ILogger;
 import main.java.com.hit.gamecalendar.common.pathmaker.PathMaker;
 import main.java.com.hit.gamecalendar.dao.Database;
 
@@ -26,7 +26,6 @@ public class Startup {
             logger.logError("Setup caught an exception: " + e);
             throw e;
         }
-
 
         Startup.finishedSetup = true;
     }

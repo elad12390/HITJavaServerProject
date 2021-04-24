@@ -1,6 +1,6 @@
-package main.java.com.hit.gamecalendar.common;
+package main.java.com.hit.gamecalendar.common.logger;
 
-import main.java.com.hit.gamecalendar.common.interfaces.ILogger;
+import main.java.com.hit.gamecalendar.common.logger.ILogger;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

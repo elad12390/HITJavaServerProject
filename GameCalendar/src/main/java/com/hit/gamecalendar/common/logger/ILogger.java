@@ -1,4 +1,4 @@
-package main.java.com.hit.gamecalendar.common.interfaces;
+package main.java.com.hit.gamecalendar.common.logger;
 
 public interface ILogger {
     void logInformation(String s);

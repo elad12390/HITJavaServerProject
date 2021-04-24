@@ -15,10 +15,18 @@ public class GameService extends BaseService<GameModel, GameRepository> {
     }
 
     public GameModel getGameById(int id) {
-        return this.repo.getItem(id);
+        return this.repo.getItemById(id);
+    }
+
+    public Long createGame(GameModel gameModel) {
+        return this.repo.createTableItem(gameModel);
     }
 
     public boolean updateGame(int id, GameModel gameModel) {
         return this.repo.updateTableItem(id, gameModel);
+    }
+
+    public boolean deleteGame(int id) {
+        return this.repo.deleteTableItem(id);
     }
 }

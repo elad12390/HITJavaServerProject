@@ -25,13 +25,15 @@ public class Database implements IDatabase {
         this._schemaName = tableName;
     }
 
+    // *********************************** Public Functions ************************************ //
+
     @Override
     public String connectionString() {
         return _connectionString;
     }
 
     @Override
-    public <T> List<T> selectAllFrom(String table, T data) {
+    public <T> List<T> getAllTableItems(String table, T data) {
         try {
             // connect to database.
             Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
@@ -50,7 +52,7 @@ public class Database implements IDatabase {
                 for (int i = 1; i <= columnCount; i++) {
                     putData(data, resultSet, resultSetMetaData, obj, gson, i);
                 }
-                results.add((T) gson.fromJson(obj.toString(), data.getClass()));
+                results.add(gson.fromJson(obj.toString(), (Class<T>)data.getClass()));
             }
 
             return results;
@@ -61,7 +63,7 @@ public class Database implements IDatabase {
     }
 
     @Override
-    public <T> T getById(String table, int id, T data) {
+    public <T> T getTableItemById(String table, int id, T data) {
         try {
             // connect to database.
             final var connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
@@ -76,13 +78,57 @@ public class Database implements IDatabase {
                 for (int i = 1; i <= columnCount; i++) {
                     putData(data, resultSet, resultSetMetaData, obj, gson, i);
                 }
-                return (T) gson.fromJson(obj.toString(), data.getClass());
+                return  gson.fromJson(obj.toString(), (Class<T>)data.getClass());
             }
-
             return null;
         } catch (Exception e) {
             Startup.logger.logError("Exception occurred in database: " + e);
             return null;
+        }
+    }
+
+    @Override
+    public <T> Long createTableItem(String table, T data) {
+        try {
+            // connect to database.
+            Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            Statement statement = connection.createStatement();
+
+            StringBuilder query = new StringBuilder("INSERT INTO `" + _schemaName + "`." + table + " VALUES (");
+            Gson gson = new Gson();
+
+            var json = gson.toJson(data);
+            Map<String, Object> objMap = gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
+            String[] keys = objMap.keySet().toArray(new String[0]);
+            for (int i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var mapObject = objMap.get(key);
+                if (key.equals("id")) {
+                    query.append("null,");
+                    continue;
+                }
+
+                if (mapObject instanceof String)
+                    query.append("'").append(mapObject).append("'");
+                else
+                    query.append(mapObject);
+                if (i < (keys.length - 1))
+                    query.append(",");
+            }
+            query.append(")");
+
+            var resultSet = statement.executeUpdate(query.toString(), Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = statement.getGeneratedKeys();
+            long id = -1;
+            if (rs.next()) {
+                id = rs.getLong(1);
+                Startup.logger.logInformation("Inserted Id " + id + " into table " + table); // display inserted record
+            }
+
+            return id;
+        } catch (Exception e) {
+            Startup.logger.logError("Exception occured in database: " + e);
+            return -1L;
         }
     }
 
@@ -118,45 +164,76 @@ public class Database implements IDatabase {
 
             return resultSet > 0;
         } catch (Exception e) {
+            Startup.logger.logError("Exception occurred in database: " + e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteFromTable(String table, int id) {
+        try {
+            // connect to database.
+            Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            Statement statement = connection.createStatement();
+
+            var resultSet = statement.executeUpdate("DELETE FROM `" + _schemaName + "`." + table + " WHERE id = " + id);
+
+            return resultSet > 0;
+        } catch (Exception e) {
             Startup.logger.logError("Exception occured in database: " + e);
             return false;
         }
     }
 
     private <T> JsonObject putData(
-            T data,
-            ResultSet resultSet,
-            ResultSetMetaData resultSetMetaData,
-            JsonObject obj,
-            Gson gson,
-            int i
+            T data, ResultSet resultSet, ResultSetMetaData resultSetMetaData,
+            JsonObject obj, Gson gson, int i
     ) throws NoSuchFieldException, SQLException {
 
         var f = data.getClass().getDeclaredField(resultSetMetaData.getColumnName(i));
         f.setAccessible(true);
 
         switch (resultSetMetaData.getColumnType(i)) {
-            case Types.BIT, Types.BOOLEAN -> obj.addProperty(resultSetMetaData.getColumnName(i), resultSet.getBoolean(i));
-            case Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT -> obj.addProperty(resultSetMetaData.getColumnName(i), resultSet.getInt(i));
-            case Types.FLOAT -> obj.addProperty(resultSetMetaData.getColumnName(i), resultSet.getFloat(i));
-            case Types.REAL, Types.DOUBLE, Types.NUMERIC, Types.DECIMAL -> obj.addProperty(resultSetMetaData.getColumnName(i), resultSet.getDouble(i));
-            case Types.CHAR -> {
-                var value = resultSet.getObject(i);
-                obj.addProperty(resultSetMetaData.getColumnName(i), (char) value);
-            }
-            default -> obj.add(resultSetMetaData.getColumnName(i), gson.toJsonTree(resultSet.getObject(i)));
+            case Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT -> addIntegerToObj(resultSetMetaData, obj, i, resultSet.getInt(i));
+
+            case Types.REAL, Types.DOUBLE, Types.NUMERIC, Types.DECIMAL -> addDoubleToObj(resultSetMetaData, obj, i, resultSet.getDouble(i));
+
+            case Types.FLOAT -> addFloatToObj(resultSetMetaData, obj, i, resultSet.getFloat(i));
+
+            case Types.BIT, Types.BOOLEAN -> addBoolean(resultSet, resultSetMetaData, obj, i);
+
+            case Types.CHAR -> addCharToObj(resultSet, resultSetMetaData, obj, i);
+
+            default -> addChildObj(resultSet, resultSetMetaData, obj, gson, i);
         }
+
         return obj;
     }
 
-    @Override
-    public <T> T addToTable(String table, T item) {
-        return null;
+
+    // *********************************** Private Functions ************************************ //
+
+    private void addChildObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, Gson gson, int i) throws SQLException {
+        obj.add(resultSetMetaData.getColumnName(i), gson.toJsonTree(resultSet.getObject(i)));
     }
 
+    private void addCharToObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {
+        obj.addProperty(resultSetMetaData.getColumnName(i), (char) resultSet.getObject(i));
+    }
 
-    @Override
-    public boolean deleteFromTable(String table, int id) {
-        return false;
+    private void addDoubleToObj(ResultSetMetaData resultSetMetaData, JsonObject obj, int i, double aDouble) throws SQLException {
+        obj.addProperty(resultSetMetaData.getColumnName(i), aDouble);
+    }
+
+    private void addFloatToObj(ResultSetMetaData resultSetMetaData, JsonObject obj, int i, double aFloat) throws SQLException {
+        obj.addProperty(resultSetMetaData.getColumnName(i), aFloat);
+    }
+
+    private void addIntegerToObj(ResultSetMetaData resultSetMetaData, JsonObject obj, int i, float anInt) throws SQLException {
+        obj.addProperty(resultSetMetaData.getColumnName(i), anInt);
+    }
+
+    private void addBoolean(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {
+        obj.addProperty(resultSetMetaData.getColumnName(i), resultSet.getBoolean(i));
     }
 }

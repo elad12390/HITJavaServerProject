@@ -19,10 +19,14 @@ import java.util.List;
 import java.util.Map;
 
 public class PathMaker {
+
+    // ************************** Public Functions ************************** //
+
     /**
      *  A method map of all methods with "@HttpMethod" annotation. (for use in runtime)
      * */
     public static Map<Triplet<String, EHttpMethod, Boolean>, Method> methodMap;
+
     /**
      * The package to scan for controllers and methods.
      */
@@ -47,6 +51,8 @@ public class PathMaker {
         }
     }
 
+    // ************************** Private Functions ************************** //
+
     /**
      * Adds all current controller methods to the hashmap
      * @param controller The current controller Class
@@ -70,9 +76,8 @@ public class PathMaker {
      * Creates the http context of the current Controller
      * @param server The HttpServer created in main
      * @param controllerAnnotation The current controller annotation (for using path)
-     * @return The same HttpServer
      */
-    private static HttpServer createControllerServerContext(HttpServer server, Controller controllerAnnotation) {
+    private static void createControllerServerContext(HttpServer server, Controller controllerAnnotation) {
         server.createContext("/api/"+controllerAnnotation.path(), exchange -> {
             try {
                 var query = exchange.getRequestURI().getQuery();
@@ -100,15 +105,19 @@ public class PathMaker {
             }
             catch (Exception e) {
                 Startup.logger.logError("Error occurred in http exchange " + e);
-                HttpResponseFactory.CreateErrorResponse(exchange, "Error occurred in http exchange", e);
+                HttpResponseFactory.CreateExceptionResponse(exchange, "Error occurred in http exchange", e);
             } finally {
                 exchange.close();
             }
         });
-
-        return server;
     }
 
+    /**
+     * Create parameters to pass to method when invoking (if the method needs any parameters).
+     * @param query Query string to convert from.
+     * @param methodToRun The method to run (for using the parameter metadata).
+     * @return An array list of all the parameters in order.
+     */
     private static ArrayList<Object> createInvokeExtraParameters(String query, Method methodToRun) {
         ArrayList<Object> invokeParams = new ArrayList<>();
         var queryParams = getQueryParams(query);
@@ -131,6 +140,7 @@ public class PathMaker {
      */
     private static void setInvokeParamsBasedOnType(Parameter methodParameter, String queryVal, ArrayList<Object> invokeParams) {
         Class<?> type = methodParameter.getType();
+
         if (Byte.class.equals(type)) {
             invokeParams.add(Byte.parseByte(queryVal));
         } else if (Short.class.equals(type)) {

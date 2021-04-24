@@ -1,6 +1,7 @@
 package main.java.com.hit.gamecalendar.common.http.responses;
 
-public class HttpResponse<T> {
+public abstract class HttpResponse<T> {
+
     public HttpResponse(int statusCode, String message, T data) {
         this.message = message;
         this.statusCode = statusCode;
@@ -17,6 +18,8 @@ public class HttpResponse<T> {
         this.statusCode = statusCode;
         this.data = data;
     }
+
+    public HttpResponse() {}
 
     public String message;
     public int statusCode;
