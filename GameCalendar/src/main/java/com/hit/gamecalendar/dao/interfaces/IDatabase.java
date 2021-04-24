@@ -1,4 +1,4 @@
-package main.java.com.hit.gamecalendar.repositories.interfaces;
+package main.java.com.hit.gamecalendar.dao.interfaces;
 
 import main.java.com.hit.gamecalendar.dao.GameModel;
 

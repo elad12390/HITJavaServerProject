@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import main.java.com.hit.gamecalendar.Startup;
-import main.java.com.hit.gamecalendar.repositories.interfaces.IDatabase;
+import main.java.com.hit.gamecalendar.dao.interfaces.IDatabase;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class Database implements IDatabase {
                 var key = keys[i];
                 var mapObject = objMap.get(key);
                 if (key.equals("id")) {
-                    query.append("null,");
+                        query.append("null,");
                     continue;
                 }
 
@@ -117,9 +117,9 @@ public class Database implements IDatabase {
             }
             query.append(")");
 
-            var resultSet = statement.executeUpdate(query.toString(), Statement.RETURN_GENERATED_KEYS);
+            statement.executeUpdate(query.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet rs = statement.getGeneratedKeys();
-            long id = -1;
+            long id = -1L;
             if (rs.next()) {
                 id = rs.getLong(1);
                 Startup.logger.logInformation("Inserted Id " + id + " into table " + table); // display inserted record

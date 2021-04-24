@@ -26,6 +26,7 @@ public class GameRepository extends BaseRepository implements IRepository<GameMo
         return db.getTableItemById(tableName(), id, new GameModel());
     }
 
+    @Override
     public Long createTableItem(GameModel m) {
         return db.createTableItem(tableName(), m);
     }
