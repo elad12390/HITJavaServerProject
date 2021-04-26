@@ -14,15 +14,9 @@ import java.util.Map;
 
 public class SqliteDatabase implements IDatabase {
     String _connectionString;
-    String _username;
-    String _pass;
-    String _schemaName;
 
-    public SqliteDatabase(String connectionString, String username, String password, String schemaName) {
+    public SqliteDatabase(String connectionString) {
         this._connectionString = connectionString;
-        this._username = username;
-        this._pass = password;
-        this._schemaName = schemaName;
     }
 
     // *********************************** Public Functions ************************************ //
@@ -36,7 +30,7 @@ public class SqliteDatabase implements IDatabase {
     public <T> List<T> getAllTableItems(String table, T data) {
         try {
             // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            Connection connection = DriverManager.getConnection(this.connectionString());
 
             var statement = connection.prepareStatement("select * from "+ table);
             ResultSet resultSet = statement.executeQuery();
@@ -57,7 +51,7 @@ public class SqliteDatabase implements IDatabase {
 
             return results;
         } catch (Exception e) {
-            Startup.logger.logError("Exception occured in database, " + e);
+            Startup.logger.logError("Exception occurred in database, " + e);
             return null;
         }
     }
@@ -66,7 +60,7 @@ public class SqliteDatabase implements IDatabase {
     public <T> T getTableItemById(String table, int id, T data) {
         try {
             // connect to database.
-            final var connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            final var connection = DriverManager.getConnection(this.connectionString());
             final var statement = connection.prepareStatement("select * from "+ table + " where id=" + id);
             final var resultSet = statement.executeQuery();
             final var resultSetMetaData = resultSet.getMetaData();
@@ -91,7 +85,7 @@ public class SqliteDatabase implements IDatabase {
     public <T> Long createTableItem(String table, T data) {
         try {
             // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            Connection connection = DriverManager.getConnection(this.connectionString());
 
             StringBuilder query = new StringBuilder("INSERT INTO " + table + " VALUES (");
             Gson gson = new Gson();
@@ -139,7 +133,7 @@ public class SqliteDatabase implements IDatabase {
     public <T> boolean updateTableItem(String table, int id, T data) {
         try {
             // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            Connection connection = DriverManager.getConnection(this.connectionString());
 
             StringBuilder query = new StringBuilder("UPDATE " + table + " SET ");
             Gson gson = new Gson();
@@ -176,7 +170,7 @@ public class SqliteDatabase implements IDatabase {
     public boolean deleteFromTable(String table, int id) {
         try {
             // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString(), this._username, this._pass);
+            Connection connection = DriverManager.getConnection(this.connectionString());
 
             var statement = connection.prepareStatement("DELETE FROM " + table + " WHERE id = " + id);
             var resultSet = statement.executeUpdate();
