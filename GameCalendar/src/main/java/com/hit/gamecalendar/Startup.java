@@ -22,8 +22,6 @@ public class Startup {
     private static void setup() {
         try {
             var dbFilePath = (new File("GameCalendar/src/main/resources/database/gamedb.db")).getAbsolutePath();
-
-
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
             Startup.logger = new Logger();
         } catch (Exception e) {
