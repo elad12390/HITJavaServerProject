@@ -11,5 +11,6 @@ public class HttpExceptionResponse<E extends Exception> extends HttpResponse<E> 
 
     public HttpExceptionResponse(E exception) {
         super(HttpURLConnection.HTTP_INTERNAL_ERROR, exception);
+        exception.getStackTrace();
     }
 }

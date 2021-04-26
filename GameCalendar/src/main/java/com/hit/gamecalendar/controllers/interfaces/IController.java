@@ -1,7 +1,6 @@
 package main.java.com.hit.gamecalendar.controllers.interfaces;
 
 import com.google.gson.Gson;
-import com.sun.net.httpserver.HttpServer;
 
 public interface IController {
     static String name() {return "";}

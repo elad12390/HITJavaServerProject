@@ -1,7 +1,5 @@
 package main.java.com.hit.gamecalendar.dao.interfaces;
 
-import main.java.com.hit.gamecalendar.dao.GameModel;
-
 import java.util.List;
 
 public interface IDatabase {

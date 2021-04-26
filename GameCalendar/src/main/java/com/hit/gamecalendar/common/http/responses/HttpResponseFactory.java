@@ -2,8 +2,8 @@ package main.java.com.hit.gamecalendar.common.http.responses;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import javassist.NotFoundException;
 import main.java.com.hit.gamecalendar.Startup;
+import main.java.com.hit.gamecalendar.common.exceptions.NotFoundException;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;

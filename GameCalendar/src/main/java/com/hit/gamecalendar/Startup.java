@@ -1,16 +1,17 @@
 package main.java.com.hit.gamecalendar;
 
 import com.sun.net.httpserver.HttpServer;
-import main.java.com.hit.gamecalendar.common.logger.Logger;
 import main.java.com.hit.gamecalendar.common.logger.ILogger;
+import main.java.com.hit.gamecalendar.common.logger.Logger;
 import main.java.com.hit.gamecalendar.common.pathmaker.PathMaker;
-import main.java.com.hit.gamecalendar.dao.Database;
+import main.java.com.hit.gamecalendar.dao.SqliteDatabase;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
 public class Startup {
-    public static Database db;
+    public static SqliteDatabase db;
     public static ILogger logger;
     public static Boolean finishedSetup = false;
     public static final int serverPort = 9110;
@@ -20,7 +21,10 @@ public class Startup {
      * */
     private static void setup() {
         try {
-            Startup.db = new Database("jdbc:mysql://localhost:3306/?user=root", "root" , "1234", "game-calendar");
+            var dbFilePath = (new File("GameCalendar/src/main/resources/database/gamedb.db")).getAbsolutePath();
+
+
+            Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath, "root" , "1234", "game-calendar");
             Startup.logger = new Logger();
         } catch (Exception e) {
             logger.logError("Setup caught an exception: " + e);

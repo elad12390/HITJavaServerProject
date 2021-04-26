@@ -12,17 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Database implements IDatabase {
+public class MysqlDatabase implements IDatabase {
     String _connectionString;
     String _username;
     String _pass;
     String _schemaName;
 
-    public Database(String connectionString, String username, String password, String tableName) {
+    public MysqlDatabase(String connectionString, String username, String password, String schemaName) {
         this._connectionString = connectionString;
         this._username = username;
         this._pass = password;
-        this._schemaName = tableName;
+        this._schemaName = schemaName;
     }
 
     // *********************************** Public Functions ************************************ //

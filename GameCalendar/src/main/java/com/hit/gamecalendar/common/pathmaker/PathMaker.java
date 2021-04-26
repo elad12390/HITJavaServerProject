@@ -1,15 +1,14 @@
 package main.java.com.hit.gamecalendar.common.pathmaker;
 
 import com.sun.net.httpserver.HttpServer;
-import javassist.NotFoundException;
+import main.java.com.hit.gamecalendar.Startup;
 import main.java.com.hit.gamecalendar.common.Triplet;
 import main.java.com.hit.gamecalendar.common.annotations.Controller;
 import main.java.com.hit.gamecalendar.common.annotations.EHttpMethod;
 import main.java.com.hit.gamecalendar.common.annotations.HttpMethod;
+import main.java.com.hit.gamecalendar.common.exceptions.NotFoundException;
 import main.java.com.hit.gamecalendar.common.http.responses.HttpResponseFactory;
-import main.java.com.hit.gamecalendar.Startup;
-
-import org.reflections.Reflections;
+import main.java.com.hit.gamecalendar.common.reflections.ReflectionHelper;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -30,17 +29,16 @@ public class PathMaker {
     /**
      * The package to scan for controllers and methods.
      */
-    public static final String PACKAGE_NAME = "main.java.com.hit";
+    public static final String PACKAGE_NAME = "main.java.com.hit.gamecalendar";
 
     /**
      * This function creates all controllers with @Controller annotation and with @HttpMethod annotations by using reflection
      * @param server The current HTTP server being used (in the main)
      */
     public static void makePaths(HttpServer server) {
-        Reflections reflections = new Reflections(PACKAGE_NAME);
 
         // get all controllers with "@Controller" annotation
-        var typesWithControllerAnnotation = reflections.getTypesAnnotatedWith(Controller.class);
+        var typesWithControllerAnnotation = ReflectionHelper.getClassesWithAnnotation(PACKAGE_NAME, Controller.class);
 
         PathMaker.methodMap = new HashMap<>();
         for (var controller: typesWithControllerAnnotation) {
