@@ -40,7 +40,8 @@ public class GameController extends BaseController {
         var id = ((Double)params.get("id")).intValue();
         if (id <= 0) return;
 
-        Logger.logInformation("Client requested game by id " + id);
+        Logger.logInformation("Client requested game by id");
+        Logger.logDebug("Id was " + id);
 
         var response = service.getGameById(id);
         var res = (response != null) ?
@@ -57,7 +58,8 @@ public class GameController extends BaseController {
         SocketRequest req = exchange.getRequest();
         var data = req.getData(GameModel.class);
 
-        Logger.logInformation("Client requested create game " + data);
+        Logger.logInformation("Client requested create game");
+        Logger.logDebug("Game: " + data);
 
         var response = SocketResponseFactory.createOkResponse(new CreateItemDBResponse(service.createGame(data)));
         exchange.send(response);

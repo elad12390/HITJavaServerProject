@@ -1,25 +1,25 @@
 package com.hit.gamecalendar.main.java.common.socket.responses;
 
 import com.google.gson.Gson;
-import com.hit.gamecalendar.main.java.common.socket.enums.SocketResponseStatus;
+import com.hit.gamecalendar.main.java.common.socket.enums.ESocketResponseStatus;
 import com.hit.gamecalendar.main.java.common.socket.interfaces.ISocketResponse;
 
 public class SocketResponse implements ISocketResponse<String> {
-    public SocketResponseStatus statusCode;
+    public ESocketResponseStatus statusCode;
     public String data;
 
-    public SocketResponse(String message, SocketResponseStatus statusCode, String data) {
+    public SocketResponse(String message, ESocketResponseStatus statusCode, String data) {
         this.statusCode = statusCode;
         this.data = data;
     }
 
-    public SocketResponse(SocketResponseStatus statusCode, String data) {
+    public SocketResponse(ESocketResponseStatus statusCode, String data) {
         this.statusCode = statusCode;
         this.data = data;
     }
 
     @Override
-    public SocketResponseStatus getStatusCode() {
+    public ESocketResponseStatus getStatusCode() {
         return statusCode;
     }
 
@@ -34,6 +34,6 @@ public class SocketResponse implements ISocketResponse<String> {
     }
 
     public Boolean isSuccessful() {
-        return this.statusCode == SocketResponseStatus.OK;
+        return this.statusCode == ESocketResponseStatus.OK;
     }
 }

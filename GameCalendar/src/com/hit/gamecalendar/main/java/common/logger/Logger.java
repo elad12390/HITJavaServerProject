@@ -1,20 +1,31 @@
 package com.hit.gamecalendar.main.java.common.logger;
 
-import com.hit.gamecalendar.main.java.common.enums.AnsiColor;
+import com.hit.gamecalendar.main.java.common.enums.EAnsiColor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 public class Logger implements ILogger {
-    private static final Function<String, String> FORMAT = (String s) -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " -- " + s;
+    public static ELoggingLevel loggingLevel;
+    private static final Function<String, String> FORMAT =
+            (String s) ->
+                EAnsiColor.ANSI_GREEN.getAnsiCharacter() +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) +
+                EAnsiColor.ANSI_RESET.getAnsiCharacter() + " -- " + s;
+
+    public static void setLoggingLevel(ELoggingLevel loggingLevel) {
+        Logger.loggingLevel = loggingLevel;
+    }
 
     public static void logInformation(String s) {
-        System.out.println(FORMAT.apply(AnsiColor.ANSI_PURPLE.getAnsiCharacter() + "[INFO]" + AnsiColor.ANSI_RESET.getAnsiCharacter() + ": " + s));
+        if (loggingLevel.compareNum(ELoggingLevel.INFORMATION) >= 0)
+            System.out.println(FORMAT.apply(EAnsiColor.ANSI_PURPLE.getAnsiCharacter() + "[INFO]" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + ": " + s));
     }
 
     public static void logDebug(String s) {
-        System.out.println(FORMAT.apply(AnsiColor.ANSI_BLUE.getAnsiCharacter() + "[DEBUG]" + AnsiColor.ANSI_RESET.getAnsiCharacter() + ": " + s));
+        if (loggingLevel.compareNum(ELoggingLevel.DEBUG) >= 0)
+            System.out.println(FORMAT.apply(EAnsiColor.ANSI_BLUE.getAnsiCharacter() + "[DEBUG]" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + ": " + s));
     }
 
     public static void logError(String s) {
@@ -24,6 +35,7 @@ public class Logger implements ILogger {
         var callerMethodName =  callerMethod.getMethodName();
         var callerClassPath = callerMethod.getClassName().split("\\.");
         var callerClassName = callerClassPath[callerClassPath.length - 1];
-        System.out.println(FORMAT.apply(AnsiColor.ANSI_RED.getAnsiCharacter() + "[ERROR]" + AnsiColor.ANSI_RESET.getAnsiCharacter() + ": Error in " + callerClassName + " in method " + callerMethodName + s));
+        if (loggingLevel.compareNum(ELoggingLevel.ERROR) >= 0)
+            System.out.println(FORMAT.apply(EAnsiColor.ANSI_RED.getAnsiCharacter() + "[ERROR]" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + ": Error in " + callerClassName + " in method " + callerMethodName + s));
     }
 }

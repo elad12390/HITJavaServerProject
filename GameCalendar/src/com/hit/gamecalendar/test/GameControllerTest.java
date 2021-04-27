@@ -59,16 +59,18 @@ public class GameControllerTest {
         try {
 
             var query = new ParamRequestMap();
-            query.put("id", 1);
+            query.put("id", 2);
             var request = new SocketRequest("GET", "/api/game/", query ,"Testing");
 
             SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
             exchange.send(request);
 
             var response = (SocketResponse)exchange.get(SocketResponse.class);
+
+            Assert.assertTrue("Response should return successful true", response.isSuccessful());
             if (response.isSuccessful()) {
                 var data = response.getData(GameModel.class);
-                System.out.println(data);
+                Logger.logDebug("response = " + data);
             }
             // should get any response
             Assert.assertNotEquals(null, response);

@@ -1,6 +1,6 @@
 package com.hit.gamecalendar.main.java.common.enums;
 
-public enum AnsiColor {
+public enum EAnsiColor {
     ANSI_RESET("\u001B[0m"),
     ANSI_BLACK("\u001B[30m"),
     ANSI_RED("\u001B[31m"),
@@ -12,7 +12,7 @@ public enum AnsiColor {
     ANSI_WHITE("\u001B[37m");
 
     private String s;
-    AnsiColor(String s) {
+    EAnsiColor(String s) {
         this.s = s;
     }
 

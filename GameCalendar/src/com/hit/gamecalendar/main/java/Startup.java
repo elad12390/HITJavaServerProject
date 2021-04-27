@@ -19,6 +19,7 @@ public class Startup {
      * */
     private static void setup() {
         try {
+            Logger.setLoggingLevel(Config.loggingLevel);
             var dbFilePath = (new File("src/com/hit/gamecalendar/main/resources/database/gamedb.db")).getAbsolutePath();
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
         } catch (Exception e) {

@@ -1,8 +1,8 @@
 package com.hit.gamecalendar.main.java.common.socket.interfaces;
 
-import com.hit.gamecalendar.main.java.common.socket.enums.SocketResponseStatus;
+import com.hit.gamecalendar.main.java.common.socket.enums.ESocketResponseStatus;
 
 public interface ISocketResponse<T> {
-    SocketResponseStatus getStatusCode();
+    ESocketResponseStatus getStatusCode();
     T getDataJson();
 }
