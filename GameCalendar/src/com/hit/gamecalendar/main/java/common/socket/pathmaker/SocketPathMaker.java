@@ -1,10 +1,9 @@
 package com.hit.gamecalendar.main.java.common.socket.pathmaker;
 
-import com.hit.gamecalendar.main.java.Startup;
 import com.hit.gamecalendar.main.java.common.Triplet;
 import com.hit.gamecalendar.main.java.common.annotations.Controller;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
-import com.hit.gamecalendar.main.java.common.socket.exceptions.NotFoundException;
+import com.hit.gamecalendar.main.java.common.socket.exceptions.SocketNotFoundException;
 import com.hit.gamecalendar.main.java.common.reflections.ReflectionHelper;
 import com.hit.gamecalendar.main.java.common.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.common.socket.annotations.SocketMethod;
@@ -87,7 +86,7 @@ public class SocketPathMaker {
 
                 var methodToRun = methodMap.get(new Triplet<>(path, ESocketMethod.getFromString(method), query != null));
                 if (methodToRun == null) {
-                    throw new NotFoundException("Could not find path: " + path + " with method " + method);
+                    throw new SocketNotFoundException("Could not find path: " + path + " with method " + method);
                 }
 
                 ArrayList<Object> invokeParams = new ArrayList<>();
@@ -98,7 +97,7 @@ public class SocketPathMaker {
 
                 methodToRun.invoke(null, invokeParams.toArray());
             }
-            catch (NotFoundException e) {
+            catch (SocketNotFoundException e) {
                 e.getStackTrace();
                 Logger.logError(e.getMessage());
                 SocketResponseFactory.createNotFoundResponse(e.getMessage(), e);

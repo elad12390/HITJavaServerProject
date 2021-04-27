@@ -10,9 +10,6 @@ import java.io.File;
 
 public class Startup {
     public static SqliteDatabase db;
-    public static ILogger logger;
-    public static Boolean finishedSetup = false;
-    public static final int serverPort = 9110;
 
     /**
      * Setup dependencies.
@@ -20,19 +17,17 @@ public class Startup {
     private static void setup() {
         try {
             Logger.setLoggingLevel(Config.loggingLevel);
-            var dbFilePath = (new File("src/com/hit/gamecalendar/main/resources/database/gamedb.db")).getAbsolutePath();
+            var dbFilePath = (new File(Config.DATABASE_FILE_PATH)).getAbsolutePath();
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
         } catch (Exception e) {
             Logger.logError("Setup caught an exception: " + e);
             throw e;
         }
-
-        Startup.finishedSetup = true;
     }
 
     private static void run() {
         try {
-            SocketDriver driver = new SocketDriver(Startup.serverPort);
+            SocketDriver driver = new SocketDriver(Config.serverPort);
             // Controller contexts
             SocketPathMaker.makePaths(driver);
             driver.listen();
