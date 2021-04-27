@@ -1,14 +1,18 @@
 package com.hit.gamecalendar.main.java.controllers;
 
+import com.google.gson.Gson;
 import com.hit.gamecalendar.main.java.Startup;
 import com.hit.gamecalendar.main.java.common.annotations.Controller;
-import com.hit.gamecalendar.main.java.common.annotations.EHttpMethod;
-import com.hit.gamecalendar.main.java.common.annotations.HttpMethod;
-import com.hit.gamecalendar.main.java.common.http.responses.CreateItemDBResponse;
-import com.hit.gamecalendar.main.java.common.http.responses.HttpResponseFactory;
+import com.hit.gamecalendar.main.java.common.logger.Logger;
+import com.hit.gamecalendar.main.java.common.socket.responses.CreateItemDBResponse;
+import com.hit.gamecalendar.main.java.common.socket.SocketExchange;
+import com.hit.gamecalendar.main.java.common.socket.annotations.SocketMethod;
+import com.hit.gamecalendar.main.java.common.socket.enums.ESocketMethod;
+import com.hit.gamecalendar.main.java.common.socket.requests.ParamRequestMap;
+import com.hit.gamecalendar.main.java.common.socket.requests.SocketRequest;
+import com.hit.gamecalendar.main.java.common.socket.responses.SocketResponseFactory;
 import com.hit.gamecalendar.main.java.controllers.abstracts.BaseController;
 import com.hit.gamecalendar.main.java.dao.GameModel;
-import com.sun.net.httpserver.HttpExchange;
 import com.hit.gamecalendar.main.java.services.GameService;
 
 @Controller(path = "game")
@@ -18,59 +22,75 @@ public class GameController extends BaseController {
         super();
     }
 
-    @HttpMethod(method = EHttpMethod.Get)
-    public static void getAllGames(HttpExchange exchange) {
-        Startup.logger.logInformation("Client requested all games");
+    @SocketMethod(method = ESocketMethod.Get)
+    public static void getAllGames(SocketExchange exchange) {
         var service = new GameService();
-        HttpResponseFactory.CreateJsonResponse(exchange, service.getAllGames());
+
+        Logger.logInformation("Client requested all games");
+
+        var res = SocketResponseFactory.createOkResponse(service.getAllGames());
+
+        exchange.send(res);
     }
 
-    @HttpMethod(method = EHttpMethod.Get, hasParams = true)
-    public static void getGameById(HttpExchange exchange, Integer id) {
-        Startup.logger.logInformation("Client requested game by id " + id);
+    @SocketMethod(method = ESocketMethod.Get, hasParams = true)
+    public static void getGameById(SocketExchange exchange, ParamRequestMap params) {
         var service = new GameService();
+
+        var id = ((Double)params.get("id")).intValue();
+        if (id <= 0) return;
+
+        Logger.logInformation("Client requested game by id " + id);
+
         var response = service.getGameById(id);
-        if (response != null) {
-            HttpResponseFactory.CreateJsonResponse(exchange, response);
-        } else {
-            HttpResponseFactory.CreateNotFoundResponse(exchange, "Item not found with id " + id);
-        }
+        var res = (response != null) ?
+                SocketResponseFactory.createOkResponse(response) :
+                SocketResponseFactory.createExceptionResponse("Item not found with id " + id);
+
+        exchange.send(res);
     }
 
-    @HttpMethod(method = EHttpMethod.Post)
-    public static void createGame(HttpExchange exchange) {
+    @SocketMethod(method = ESocketMethod.Create)
+    public static void createGame(SocketExchange exchange) {
         var service = new GameService();
-        try {
-            GameModel reqObj = getBodyAsEntity(exchange, new GameModel());
-            Startup.logger.logInformation("Client requested create game " + reqObj);
-            HttpResponseFactory.CreateJsonResponse(exchange, new CreateItemDBResponse(service.createGame(reqObj)));
-        } catch (Exception e) {
-            HttpResponseFactory.CreateExceptionResponse(exchange, "could not parse json!", e);
-        }
+
+        SocketRequest req = exchange.getRequest();
+        var data = req.getData(GameModel.class);
+
+        Logger.logInformation("Client requested create game " + data);
+
+        var response = SocketResponseFactory.createOkResponse(new CreateItemDBResponse(service.createGame(data)));
+        exchange.send(response);
     }
 
-    @HttpMethod(method = EHttpMethod.Put, hasParams = true)
-    public static void updateGame(HttpExchange exchange, Integer id) {
-        Startup.logger.logInformation("Client updated game by id " + id);
+    @SocketMethod(method = ESocketMethod.Update, hasParams = true)
+    public static void updateGame(SocketExchange exchange, ParamRequestMap params) {
         var service = new GameService();
-        try {
-            GameModel reqObj = getBodyAsEntity(exchange, new GameModel());
-            HttpResponseFactory.CreateJsonResponse(exchange, service.updateGame(id, reqObj));
-        } catch (Exception e) {
-            HttpResponseFactory.CreateExceptionResponse(exchange, "could not parse json!", e);
-        }
 
+        var id = ((Double)params.get("id")).intValue();
+        if (id <= 0) return;
+
+        Logger.logInformation("Client updated game by id " + id);
+
+        SocketRequest req = exchange.getRequest();
+        var data = req.getData(GameModel.class);
+
+        var response = SocketResponseFactory.createOkResponse(service.updateGame(id, data));
+        exchange.send(response);
     }
 
-    @HttpMethod(method = EHttpMethod.Delete, hasParams = true)
-    public static void deleteGame(HttpExchange exchange, Integer id) {
-        Startup.logger.logInformation("Client updated game by id " + id);
+    @SocketMethod(method = ESocketMethod.Delete, hasParams = true)
+    public static void deleteGame(SocketExchange exchange, ParamRequestMap params) {
         var service = new GameService();
-        try {
-            HttpResponseFactory.CreateJsonResponse(exchange, service.deleteGame(id));
-        } catch (Exception e) {
-            HttpResponseFactory.CreateExceptionResponse(exchange, "could not parse json!", e);
-        }
+
+        var id = ((Double)params.get("id")).intValue();
+        if (id <= 0) return;
+
+        Logger.logInformation("Client deleted game by id " + id);
+
+        var isDeleted = service.deleteGame(id);
+        var response = SocketResponseFactory.createOkResponse(isDeleted);
+        exchange.send(response);
 
     }
 

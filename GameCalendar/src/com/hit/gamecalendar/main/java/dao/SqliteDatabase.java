@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.hit.gamecalendar.main.java.Startup;
+import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.dao.interfaces.IDatabase;
 
 import java.sql.*;
@@ -51,7 +52,7 @@ public class SqliteDatabase implements IDatabase {
 
             return results;
         } catch (Exception e) {
-            Startup.logger.logError("Exception occurred in database, " + e);
+            Logger.logError("Exception occurred in database, " + e);
             return null;
         }
     }
@@ -76,7 +77,7 @@ public class SqliteDatabase implements IDatabase {
             }
             return null;
         } catch (Exception e) {
-            Startup.logger.logError("Exception occurred in database: " + e);
+            Logger.logError("Exception occurred in database: " + e);
             return null;
         }
     }
@@ -119,12 +120,12 @@ public class SqliteDatabase implements IDatabase {
             long id = -1L;
             if (rs.next()) {
                 id = rs.getLong(1);
-                Startup.logger.logInformation("Inserted Id " + id + " into table " + table); // display inserted record
+                Logger.logInformation("Inserted Id " + id + " into table " + table); // display inserted record
             }
 
             return id;
         } catch (Exception e) {
-            Startup.logger.logError("Exception occured in database: " + e);
+            Logger.logError("Exception occured in database: " + e);
             return -1L;
         }
     }
@@ -161,7 +162,7 @@ public class SqliteDatabase implements IDatabase {
 
             return resultSet > 0;
         } catch (Exception e) {
-            Startup.logger.logError("Exception occurred in database: " + e);
+            Logger.logError("Exception occurred in database: " + e);
             return false;
         }
     }
@@ -177,7 +178,7 @@ public class SqliteDatabase implements IDatabase {
 
             return resultSet > 0;
         } catch (Exception e) {
-            Startup.logger.logError("Exception occured in database: " + e);
+            Logger.logError("Exception occured in database: " + e);
             return false;
         }
     }

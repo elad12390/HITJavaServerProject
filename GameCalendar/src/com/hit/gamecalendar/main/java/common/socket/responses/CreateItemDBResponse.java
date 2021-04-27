@@ -1,4 +1,4 @@
-package com.hit.gamecalendar.main.java.common.http.responses;
+package com.hit.gamecalendar.main.java.common.socket.responses;
 
 public class CreateItemDBResponse {
     public Long id;

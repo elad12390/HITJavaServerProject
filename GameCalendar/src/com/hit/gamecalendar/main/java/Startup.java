@@ -1,14 +1,12 @@
 package com.hit.gamecalendar.main.java;
 
+import com.hit.gamecalendar.main.java.common.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.dao.SqliteDatabase;
-import com.sun.net.httpserver.HttpServer;
 import com.hit.gamecalendar.main.java.common.logger.ILogger;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
-import com.hit.gamecalendar.main.java.common.pathmaker.PathMaker;
+import com.hit.gamecalendar.main.java.common.socket.pathmaker.SocketPathMaker;
 
 import java.io.File;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 
 public class Startup {
     public static SqliteDatabase db;
@@ -21,11 +19,10 @@ public class Startup {
      * */
     private static void setup() {
         try {
-            var dbFilePath = (new File("GameCalendar/src/com/hit/gamecalendar/main/resources/database/gamedb.db")).getAbsolutePath();
+            var dbFilePath = (new File("src/com/hit/gamecalendar/main/resources/database/gamedb.db")).getAbsolutePath();
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
-            Startup.logger = new Logger();
         } catch (Exception e) {
-            logger.logError("Setup caught an exception: " + e);
+            Logger.logError("Setup caught an exception: " + e);
             throw e;
         }
 
@@ -34,17 +31,12 @@ public class Startup {
 
     private static void run() {
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
-
+            SocketDriver driver = new SocketDriver(Startup.serverPort);
             // Controller contexts
-            PathMaker.makePaths(server);
-
-            // Makes the server run using threads.
-            server.setExecutor(Executors.newCachedThreadPool());
-            server.start();
-            logger.logInformation("running at port " + Startup.serverPort);
+            SocketPathMaker.makePaths(driver);
+            driver.listen();
         } catch (Exception e) {
-            logger.logError("Server could not start, Exception: " + e);
+            Logger.logError("Server could not start, Exception: " + e);
         }
     }
 
