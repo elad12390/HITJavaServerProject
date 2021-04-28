@@ -4,6 +4,8 @@ import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketPathAlreadyExi
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketHandler;
 import com.hit.gamecalendar.main.java.api.socket.requests.SocketRequest;
+import main.java.com.hit.stringmatching.implementations.RobinKarpAlgoMatcherImpl;
+import main.java.com.hit.stringmatching.interfaces.IAlgoStringMatcher;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -55,16 +57,23 @@ public class SocketDriver implements ISocketDriver {
 
     private Runnable handleClientRequest() {
         return () -> {
-            try {
-                SocketExchange exchange = new SocketExchange(socket);
-                SocketRequest request = exchange.getRequest();
+            SocketExchange exchange = null;
 
+            try {
+                exchange = new SocketExchange(socket);
+            } catch (IOException e) {
+                Logger.logError("Could not open socket " + e.toString());
+            }
+
+            try {
+                SocketRequest request = exchange.getRequest();
                 // we have request from client lets do something with it !
                 // lets try to find the requested request in the method list
+                IAlgoStringMatcher matcher = new RobinKarpAlgoMatcherImpl();
                 var key = socketPaths
                         .keySet()
                         .stream()
-                        .filter((k) -> request.getPath().indexOf(k) != -1)
+                        .filter((k) -> matcher.match(request.getPath(), k) != -1)
                         .findAny().orElse(null);
 
                 if (key != null) {
@@ -72,7 +81,8 @@ public class SocketDriver implements ISocketDriver {
                     p.handle(exchange);
                 }
             } catch (Exception e) {
-                Logger.logError("Could not ");
+                Logger.logError("Could not handle request " + e.toString());
+                exchange.close();
             }
         };
     }

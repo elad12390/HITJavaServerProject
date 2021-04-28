@@ -19,6 +19,7 @@ public class GameRepository extends BaseRepository implements IRepository<GameMo
 
     @Override
     public List<GameModel> getAll() {
+
         List<GameModel> data;
         final String tableName = this.tableName();
 

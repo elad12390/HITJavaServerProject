@@ -23,6 +23,9 @@ import java.time.format.DateTimeFormatter;
 public class GameControllerTest {
     public static InetAddress clientAddress;
     public static final int port = 9110;
+    public static final Gson gson = new Gson();
+    public static SocketResponse createdGameResponse = null;
+    public static SocketResponse deletedGameResponse = null;
 
     @BeforeClass
     public static void StartServer() throws IOException, InterruptedException {
@@ -36,14 +39,11 @@ public class GameControllerTest {
     }
 
     @Test
-    public void testGettingAllGames() {
-        var request = new SocketRequest("GET", "/api/game/", null, "Testing");
+    public void getAllGamesTest() {
 
         // use the client to send the request
         try {
-            SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
-            exchange.send(request);
-            var games = (SocketResponse)exchange.get(SocketResponse.class);
+            SocketResponse games = getAllGames();
 
             // should get any response
             Assert.assertNotEquals(null, games);
@@ -57,19 +57,12 @@ public class GameControllerTest {
     }
 
     @Test
-    public void testGettingOneGame() {
+    public void getGameTest() {
 
         // use the client to send the request
         try {
 
-            var query = new ParamRequestMap();
-            query.put("id", 2);
-            var request = new SocketRequest("GET", "/api/game/", query ,"Testing");
-
-            SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
-            exchange.send(request);
-
-            var response = (SocketResponse)exchange.get(SocketResponse.class);
+            SocketResponse response = getGame();
 
             Assert.assertTrue("Response should return successful true", response.isSuccessful());
             if (response.isSuccessful()) {
@@ -89,16 +82,60 @@ public class GameControllerTest {
     }
 
     @Test
-    public void testCreatingAndDeleteGame() {
+    public void createGameTest() {
 
         // use the client to send the request
         try {
-            var gson = new Gson();
-            var gameResponse = createGame(gson);
-            deleteGameCreated(gson, gameResponse);
+            createdGameResponse = createGame(gson);
+
+            // should get any response
+            Assert.assertNotEquals(null, createdGameResponse);
+
+            // game number 1 should exist (assuming db is not empty)
+            if (createdGameResponse != null)
+                Assert.assertNotEquals(null, createdGameResponse.data);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void deleteGameTest() {
+
+        // use the client to send the request
+        try {
+            deletedGameResponse = deleteGameCreated(gson, createdGameResponse);
+
+            // should get any response
+            Assert.assertNotEquals(null, deletedGameResponse);
+
+            // game number 1 should exist (assuming db is not empty)
+            if (deletedGameResponse != null)
+                Assert.assertEquals(true, gson.fromJson(deletedGameResponse.data, Boolean.class));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SocketResponse getAllGames() throws IOException {
+        var request = new SocketRequest("GET", "/api/game/", null, "Testing");
+        SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
+        exchange.send(request);
+        return (SocketResponse)exchange.get(SocketResponse.class);
+    }
+
+    private SocketResponse getGame() throws IOException {
+        var query = new ParamRequestMap();
+        query.put("id", 2);
+        var request = new SocketRequest("GET", "/api/game/", query ,"Testing");
+
+        SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
+        exchange.send(request);
+
+        var response = (SocketResponse)exchange.get(SocketResponse.class);
+        return response;
     }
 
     private SocketResponse createGame(Gson gson) throws IOException {
@@ -111,35 +148,21 @@ public class GameControllerTest {
         SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
         exchange.send(request);
 
-        var gameResponse = (SocketResponse)exchange.get(SocketResponse.class);
-
-        // should get any response
-        Assert.assertNotEquals(null, gameResponse);
-
-        // game number 1 should exist (assuming db is not empty)
-        if (gameResponse != null)
-            Assert.assertNotEquals(null, gameResponse.data);
-
-        return gameResponse;
+        return exchange.get(SocketResponse.class);
     }
 
-    private void deleteGameCreated(Gson gson, SocketResponse gameResponse) throws IOException {
+    private SocketResponse deleteGameCreated(Gson gson, SocketResponse gameResponse) throws IOException {
         SocketRequest request;
         SocketExchange exchange;
-        var query = new ParamRequestMap();
         var creationResponse = gson.fromJson(gameResponse.data, CreateItemDBResponse.class);
+
+        var query = new ParamRequestMap();
         query.put("id", creationResponse.id.intValue());
+
         request = new SocketRequest("DELETE", "/api/game/", query, null);
         exchange = new SocketExchange(new Socket(clientAddress, port));
         exchange.send(request);
 
-        var deleteResponse = (SocketResponse)exchange.get(SocketResponse.class);
-
-        // should get any response
-        Assert.assertNotEquals(null, deleteResponse);
-
-        // game number 1 should exist (assuming db is not empty)
-        if (deleteResponse != null)
-            Assert.assertEquals(true, gson.fromJson(deleteResponse.data, Boolean.class));
+        return exchange.get(SocketResponse.class);
     }
 }

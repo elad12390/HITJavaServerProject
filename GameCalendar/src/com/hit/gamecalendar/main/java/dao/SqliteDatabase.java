@@ -10,10 +10,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.function.Function;
 
 
 public class SqliteDatabase implements IDatabase {
     String _connectionString;
+
+    // allow only one query at a time to the database
+    private Semaphore semaphore = new Semaphore(1);
 
     public SqliteDatabase(String connectionString) {
         this._connectionString = connectionString;
@@ -28,9 +33,10 @@ public class SqliteDatabase implements IDatabase {
 
     @Override
     public <T> List<T> getAllTableItems(String table, T data) {
+        Connection connection = createConnection(false);
+        if (connection == null) return null;
         try {
             // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString());
 
             var statement = connection.prepareStatement("select * from "+ table);
             ResultSet resultSet = statement.executeQuery();
@@ -53,14 +59,18 @@ public class SqliteDatabase implements IDatabase {
         } catch (Exception e) {
             Logger.logError("Exception occurred in database, " + e);
             return null;
+        } finally {
+            closeConnection(connection, false);
         }
     }
 
     @Override
     public <T> T getTableItemById(String table, int id, T data) {
+        Connection connection = createConnection(false);
+        if (connection == null) return null;
+
         try {
             // connect to database.
-            final var connection = DriverManager.getConnection(this.connectionString());
             final var statement = connection.prepareStatement("select * from "+ table + " where id=" + id);
             final var resultSet = statement.executeQuery();
             final var resultSetMetaData = resultSet.getMetaData();
@@ -74,19 +84,22 @@ public class SqliteDatabase implements IDatabase {
                 }
                 return  gson.fromJson(obj.toString(), (Class<T>)data.getClass());
             }
+
             return null;
         } catch (Exception e) {
             Logger.logError("Exception occurred in database: " + e);
             return null;
+        } finally {
+            closeConnection(connection, false);
         }
     }
 
     @Override
     public <T> Long createTableItem(String table, T data) {
-        try {
-            // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString());
+        Connection connection = createConnection(true);
+        if (connection == null) return null;
 
+        try {
             StringBuilder query = new StringBuilder("INSERT INTO " + table + " VALUES (");
             Gson gson = new Gson();
 
@@ -110,8 +123,6 @@ public class SqliteDatabase implements IDatabase {
             }
             query.append(")");
 
-
-
             var statement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
             statement.executeUpdate();
 
@@ -126,14 +137,17 @@ public class SqliteDatabase implements IDatabase {
         } catch (Exception e) {
             Logger.logError("Exception occured in database: " + e);
             return -1L;
+        } finally {
+            closeConnection(connection, true);
         }
     }
 
     @Override
     public <T> boolean updateTableItem(String table, int id, T data) {
+        Connection connection = createConnection(true);
+        if (connection == null) return false;
+
         try {
-            // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString());
 
             StringBuilder query = new StringBuilder("UPDATE " + table + " SET ");
             Gson gson = new Gson();
@@ -158,20 +172,21 @@ public class SqliteDatabase implements IDatabase {
             var statement = connection.prepareStatement(query.toString());
             var resultSet = statement.executeUpdate();
 
-
             return resultSet > 0;
         } catch (Exception e) {
             Logger.logError("Exception occurred in database: " + e);
             return false;
+        } finally {
+            closeConnection(connection, true);
         }
     }
 
     @Override
     public boolean deleteFromTable(String table, int id) {
-        try {
-            // connect to database.
-            Connection connection = DriverManager.getConnection(this.connectionString());
+        Connection connection = createConnection(true);
+        if (connection == null) return false;
 
+        try {
             var statement = connection.prepareStatement("DELETE FROM " + table + " WHERE id = " + id);
             var resultSet = statement.executeUpdate();
 
@@ -179,8 +194,13 @@ public class SqliteDatabase implements IDatabase {
         } catch (Exception e) {
             Logger.logError("Exception occured in database: " + e);
             return false;
+        } finally {
+            closeConnection(connection, true);
         }
     }
+
+    // *********************************** Private Functions ************************************ //
+
 
     private <T> JsonObject putData(
             T data, ResultSet resultSet, ResultSetMetaData resultSetMetaData,
@@ -207,8 +227,26 @@ public class SqliteDatabase implements IDatabase {
         return obj;
     }
 
+    private Connection createConnection(boolean lock) {
+        try {
+            this.semaphore.acquire();
+            return DriverManager.getConnection(this.connectionString());
+        } catch (Exception throwables) {
+            Logger.logError("Connection with database could not be established");
+            throwables.printStackTrace();
+        }
+        return null;
+    }
 
-    // *********************************** Private Functions ************************************ //
+    private void closeConnection(Connection connection, boolean release) {
+        try {
+            connection.close();
+            semaphore.release();
+        } catch (SQLException throwables) {
+            Logger.logError("Could not close sql connection");
+            throwables.printStackTrace();
+        }
+    }
 
     private void addChildObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, Gson gson, int i) throws SQLException {
         obj.add(resultSetMetaData.getColumnName(i), gson.toJsonTree(resultSet.getObject(i)));
