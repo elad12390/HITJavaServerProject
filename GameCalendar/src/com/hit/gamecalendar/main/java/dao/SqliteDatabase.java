@@ -3,7 +3,6 @@ package com.hit.gamecalendar.main.java.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.hit.gamecalendar.main.java.Startup;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.dao.interfaces.IDatabase;
 

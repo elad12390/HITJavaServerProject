@@ -2,13 +2,13 @@ package com.hit.gamecalendar.test;
 
 
 import com.google.gson.Gson;
-import com.hit.gamecalendar.main.java.Startup;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
-import com.hit.gamecalendar.main.java.common.socket.SocketExchange;
-import com.hit.gamecalendar.main.java.common.socket.requests.ParamRequestMap;
-import com.hit.gamecalendar.main.java.common.socket.requests.SocketRequest;
-import com.hit.gamecalendar.main.java.common.socket.responses.CreateItemDBResponse;
-import com.hit.gamecalendar.main.java.common.socket.responses.SocketResponse;
+import com.hit.gamecalendar.main.java.api.socket.SocketExchange;
+import com.hit.gamecalendar.main.java.api.socket.requests.ParamRequestMap;
+import com.hit.gamecalendar.main.java.api.socket.requests.SocketRequest;
+import com.hit.gamecalendar.main.java.api.socket.responses.CreateItemDBResponse;
+import com.hit.gamecalendar.main.java.api.socket.responses.SocketResponse;
 import com.hit.gamecalendar.main.java.dao.GameModel;
 import org.junit.Assert;
 import org.junit.BeforeClass;

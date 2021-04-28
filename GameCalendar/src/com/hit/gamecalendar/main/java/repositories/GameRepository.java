@@ -1,6 +1,6 @@
 package com.hit.gamecalendar.main.java.repositories;
 
-import com.hit.gamecalendar.main.java.Startup;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.dao.GameModel;
 import com.hit.gamecalendar.main.java.repositories.abstracts.BaseRepository;
 import com.hit.gamecalendar.main.java.repositories.interfaces.IRepository;
