@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.hit.gamecalendar.main.java.common.socket.interfaces.ISocketRequest;
 
 public class SocketRequest implements ISocketRequest {
-    private String method;
-    private String path;
-    private ParamRequestMap queryData;
+    private final String method;
+    private final String path;
+    private final ParamRequestMap queryData;
     private String data;
 
     public SocketRequest(String method, String path, ParamRequestMap queryData, String jsonData) {

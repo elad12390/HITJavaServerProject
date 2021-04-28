@@ -19,26 +19,58 @@ public class GameRepository extends BaseRepository implements IRepository<GameMo
 
     @Override
     public List<GameModel> getAll() {
-        return Startup.db.getAllTableItems(tableName(), new GameModel());
+        List<GameModel> data;
+        final String tableName = this.tableName();
+
+        if(this.cache.exists(tableName)) {
+            data = this.cache.get(tableName);
+        } else {
+            data = Startup.db.getAllTableItems(tableName, new GameModel());
+            this.cache.set(tableName, data);
+        }
+
+        return data;
     }
 
     @Override
     public GameModel getItemById(int id) {
-        return Startup.db.getTableItemById(tableName(), id, new GameModel());
+        GameModel data;
+        final String tableName = this.tableName();
+
+        if(this.cache.exists(tableName)) {
+            List<GameModel> allData = this.cache.get(tableName);
+
+            data = allData.stream()
+                    .filter((game) -> game.id ==  id)
+                    .findAny()
+                    .orElse(null);
+        } else {
+            data = Startup.db.getTableItemById(tableName, id, new GameModel());
+        }
+        return data;
     }
 
     @Override
     public Long createTableItem(GameModel m) {
-        return Startup.db.createTableItem(tableName(), m);
+        final String tableName = this.tableName();
+
+        this.cache.remove(tableName);
+        return Startup.db.createTableItem(tableName, m);
     }
 
     @Override
     public boolean updateTableItem(int id, GameModel m) {
+        final String tableName = this.tableName();
+
+        this.cache.remove(tableName);
         return Startup.db.updateTableItem(tableName(), id, m);
     }
 
     @Override
     public boolean deleteTableItem(int id) {
+        final String tableName = this.tableName();
+
+        this.cache.remove(tableName);
         return Startup.db.deleteFromTable(tableName(), id);
     }
 }
