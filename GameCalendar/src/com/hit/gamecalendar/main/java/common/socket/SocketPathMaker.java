@@ -1,12 +1,11 @@
-package com.hit.gamecalendar.main.java.common.socket.pathmaker;
+package com.hit.gamecalendar.main.java.common.socket;
 
 import com.hit.gamecalendar.main.java.common.Triplet;
 import com.hit.gamecalendar.main.java.common.annotations.Controller;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
+import com.hit.gamecalendar.main.java.common.socket.annotations.SocketMethod;
 import com.hit.gamecalendar.main.java.common.socket.exceptions.SocketNotFoundException;
 import com.hit.gamecalendar.main.java.common.reflections.ReflectionHelper;
-import com.hit.gamecalendar.main.java.common.socket.SocketDriver;
-import com.hit.gamecalendar.main.java.common.socket.annotations.SocketMethod;
 import com.hit.gamecalendar.main.java.common.socket.enums.ESocketMethod;
 import com.hit.gamecalendar.main.java.common.socket.exceptions.SocketPathAlreadyExistsException;
 import com.hit.gamecalendar.main.java.common.socket.responses.SocketResponseFactory;
@@ -62,8 +61,9 @@ public class SocketPathMaker {
             var methodAnnotation = method.getAnnotation(SocketMethod.class);
             if (methodAnnotation == null) continue;
 
+            var methodTemplate = methodAnnotation.template().length() > 0 ? methodAnnotation.template() + "/" : "";
             methodMap.put(
-                    new Triplet<>( "/api/" + controllerAnnotation.path() + "/" + methodAnnotation.template(), methodAnnotation.method(), methodAnnotation.hasParams()),
+                    new Triplet<>( "/api/" + controllerAnnotation.path() + "/" + methodTemplate, methodAnnotation.method(), methodAnnotation.hasParams()),
                     method
             );
         }

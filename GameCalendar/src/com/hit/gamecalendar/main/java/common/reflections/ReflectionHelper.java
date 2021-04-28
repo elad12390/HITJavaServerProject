@@ -22,7 +22,7 @@ public class ReflectionHelper {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-        List<File> dirs = new ArrayList<File>();
+        List<File> dirs = new ArrayList<>();
         while (resources.hasMoreElements()) {
             try {
                 URI resource = resources.nextElement().toURI();
@@ -31,7 +31,7 @@ public class ReflectionHelper {
                 e.printStackTrace();
             }
         }
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
         for (File directory : dirs)
             classes.addAll(findClasses(directory, packageName, a));
 

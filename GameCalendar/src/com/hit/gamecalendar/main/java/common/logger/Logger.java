@@ -12,7 +12,7 @@ public class Logger implements ILogger {
             (String s) ->
                 EAnsiColor.ANSI_GREEN.getAnsiCharacter() +
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) +
-                EAnsiColor.ANSI_RESET.getAnsiCharacter() + " -- " + s;
+                " ~ $" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + s;
 
     public static void setLoggingLevel(ELoggingLevel loggingLevel) {
         Logger.loggingLevel = loggingLevel;

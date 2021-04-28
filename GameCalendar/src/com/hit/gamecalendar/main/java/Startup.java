@@ -2,9 +2,8 @@ package com.hit.gamecalendar.main.java;
 
 import com.hit.gamecalendar.main.java.common.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.dao.SqliteDatabase;
-import com.hit.gamecalendar.main.java.common.logger.ILogger;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
-import com.hit.gamecalendar.main.java.common.socket.pathmaker.SocketPathMaker;
+import com.hit.gamecalendar.main.java.common.socket.SocketPathMaker;
 
 import java.io.File;
 

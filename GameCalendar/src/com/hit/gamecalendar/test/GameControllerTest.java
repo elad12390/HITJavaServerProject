@@ -27,7 +27,11 @@ public class GameControllerTest {
     @BeforeClass
     public static void StartServer() throws IOException, InterruptedException {
         Startup.main(null);
+
+        // wait one second for server to start (because it starts on another thread)
         Thread.sleep(1000);
+
+        // set this pc current ip address for sending requests
         clientAddress = InetAddress.getLocalHost();
     }
 

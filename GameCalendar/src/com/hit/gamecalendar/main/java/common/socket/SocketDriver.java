@@ -62,8 +62,14 @@ public class SocketDriver implements ISocketDriver {
 
                 // we have request from client lets do something with it !
                 // lets try to find the requested request in the method list
-                if (socketPaths.containsKey(request.getPath())) {
-                    var p = socketPaths.get(request.getPath());
+                var key = socketPaths
+                        .keySet()
+                        .stream()
+                        .filter((k) -> request.getPath().indexOf(k) != -1)
+                        .findAny().orElse(null);
+
+                if (key != null) {
+                    var p = socketPaths.get(key);
                     p.handle(exchange);
                 }
             } catch (Exception e) {

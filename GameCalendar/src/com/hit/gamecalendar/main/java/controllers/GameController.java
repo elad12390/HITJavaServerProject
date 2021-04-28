@@ -1,7 +1,5 @@
 package com.hit.gamecalendar.main.java.controllers;
 
-import com.google.gson.Gson;
-import com.hit.gamecalendar.main.java.Startup;
 import com.hit.gamecalendar.main.java.common.annotations.Controller;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.common.socket.responses.CreateItemDBResponse;
