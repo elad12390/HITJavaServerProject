@@ -67,7 +67,8 @@ public class SocketDriver implements ISocketDriver {
 
             try {
                 SocketRequest request = exchange.getRequest();
-                // we have request from client lets do something with it !
+
+                // we have request from client lets do something with our algorithm !
                 // lets try to find the requested request in the method list
                 IAlgoStringMatcher matcher = new RobinKarpAlgoMatcherImpl();
                 var key = socketPaths

@@ -229,7 +229,8 @@ public class SqliteDatabase implements IDatabase {
 
     private Connection createConnection(boolean lock) {
         try {
-            this.semaphore.acquire();
+            if (lock)
+                this.semaphore.acquire();
             return DriverManager.getConnection(this.connectionString());
         } catch (Exception throwables) {
             Logger.logError("Connection with database could not be established");
@@ -241,7 +242,8 @@ public class SqliteDatabase implements IDatabase {
     private void closeConnection(Connection connection, boolean release) {
         try {
             connection.close();
-            semaphore.release();
+            if (release)
+                semaphore.release();
         } catch (SQLException throwables) {
             Logger.logError("Could not close sql connection");
             throwables.printStackTrace();
