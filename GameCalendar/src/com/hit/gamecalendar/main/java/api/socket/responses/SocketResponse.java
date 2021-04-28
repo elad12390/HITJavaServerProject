@@ -36,4 +36,12 @@ public class SocketResponse implements ISocketResponse<String> {
     public Boolean isSuccessful() {
         return this.statusCode == ESocketResponseStatus.OK;
     }
+
+    @Override
+    public String toString() {
+        return "SocketResponse{" +
+                "statusCode=" + statusCode +
+                ", data='" + data + '\'' +
+                '}';
+    }
 }

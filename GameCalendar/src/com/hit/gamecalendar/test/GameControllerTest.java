@@ -44,6 +44,7 @@ public class GameControllerTest {
         // use the client to send the request
         try {
             SocketResponse games = getAllGames();
+            Logger.logDebug("response = " + games.toString());
 
             // should get any response
             Assert.assertNotEquals(null, games);
