@@ -1,6 +1,7 @@
 package com.hit.gamecalendar.main.java.common.logger;
 
 import com.hit.gamecalendar.main.java.common.enums.EAnsiColor;
+import com.hit.gamecalendar.main.java.common.enums.ELoggingLevel;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
