@@ -3,6 +3,7 @@ package com.hit.gamecalendar.main.java.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.dao.interfaces.IDatabase;
 
@@ -43,16 +44,15 @@ public class SqliteDatabase implements IDatabase {
 
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             final int columnCount = resultSetMetaData.getColumnCount();
-            var gson = new Gson();
 
 
             List<T> results = new ArrayList<>(columnCount);
             while (resultSet.next()) {
                 JsonObject obj = new JsonObject();
                 for (int i = 1; i <= columnCount; i++) {
-                    putData(data, resultSet, resultSetMetaData, obj, gson, i);
+                    putData(data, resultSet, resultSetMetaData, obj, i);
                 }
-                results.add(gson.fromJson(obj.toString(), (Class<T>)data.getClass()));
+                results.add(Startup.gson.fromJson(obj.toString(), (Class<T>)data.getClass()));
             }
 
             return results;
@@ -75,14 +75,13 @@ public class SqliteDatabase implements IDatabase {
             final var resultSet = statement.executeQuery();
             final var resultSetMetaData = resultSet.getMetaData();
             final var columnCount = resultSetMetaData.getColumnCount();
-            final var gson = new Gson();
 
             if (resultSet.next()) {
                 JsonObject obj = new JsonObject();
                 for (int i = 1; i <= columnCount; i++) {
-                    putData(data, resultSet, resultSetMetaData, obj, gson, i);
+                    putData(data, resultSet, resultSetMetaData, obj, i);
                 }
-                return  gson.fromJson(obj.toString(), (Class<T>)data.getClass());
+                return  Startup.gson.fromJson(obj.toString(), (Class<T>)data.getClass());
             }
 
             return null;
@@ -101,10 +100,9 @@ public class SqliteDatabase implements IDatabase {
 
         try {
             StringBuilder query = new StringBuilder("INSERT INTO " + table + " VALUES (");
-            Gson gson = new Gson();
 
-            var json = gson.toJson(data);
-            Map<String, Object> objMap = gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
+            var json = Startup.gson.toJson(data);
+            Map<String, Object> objMap = Startup.gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
             String[] keys = objMap.keySet().toArray(new String[0]);
             for (int i = 0; i < keys.length; i++) {
                 var key = keys[i];
@@ -150,10 +148,9 @@ public class SqliteDatabase implements IDatabase {
         try {
 
             StringBuilder query = new StringBuilder("UPDATE " + table + " SET ");
-            Gson gson = new Gson();
 
-            var json = gson.toJson(data);
-            Map<String, Object> objMap = gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
+            var json = Startup.gson.toJson(data);
+            Map<String, Object> objMap = Startup.gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
             String[] keys = objMap.keySet().toArray(new String[0]);
             for (int i = 0; i < keys.length; i++) {
                 var key = keys[i];
@@ -204,7 +201,7 @@ public class SqliteDatabase implements IDatabase {
 
     private <T> JsonObject putData(
             T data, ResultSet resultSet, ResultSetMetaData resultSetMetaData,
-            JsonObject obj, Gson gson, int i
+            JsonObject obj, int i
     ) throws NoSuchFieldException, SQLException {
 
         var f = data.getClass().getDeclaredField(resultSetMetaData.getColumnName(i));
@@ -221,7 +218,7 @@ public class SqliteDatabase implements IDatabase {
 
             case Types.CHAR -> addCharToObj(resultSet, resultSetMetaData, obj, i);
 
-            default -> addChildObj(resultSet, resultSetMetaData, obj, gson, i);
+            default -> addChildObj(resultSet, resultSetMetaData, obj, i);
         }
 
         return obj;
@@ -250,8 +247,8 @@ public class SqliteDatabase implements IDatabase {
         }
     }
 
-    private void addChildObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, Gson gson, int i) throws SQLException {
-        obj.add(resultSetMetaData.getColumnName(i), gson.toJsonTree(resultSet.getObject(i)));
+    private void addChildObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {
+        obj.add(resultSetMetaData.getColumnName(i), Startup.gson.toJsonTree(resultSet.getObject(i)));
     }
 
     private void addCharToObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {

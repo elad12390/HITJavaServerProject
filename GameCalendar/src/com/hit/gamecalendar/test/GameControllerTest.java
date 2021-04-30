@@ -23,13 +23,17 @@ import java.time.format.DateTimeFormatter;
 public class GameControllerTest {
     public static InetAddress clientAddress;
     public static final int port = 9110;
-    public static final Gson gson = new Gson();
     public static SocketResponse createdGameResponse = null;
     public static SocketResponse deletedGameResponse = null;
 
     @BeforeClass
     public static void StartServer() throws IOException, InterruptedException {
-        Startup.main(null);
+        String[] args = {
+                "--l=e",
+                "--m=kmp"
+        };
+
+        Startup.main(args);
 
         // wait one second for server to start (because it starts on another thread)
         Thread.sleep(1000);
@@ -47,11 +51,10 @@ public class GameControllerTest {
             Logger.logDebug("response = " + games.toString());
 
             // should get any response
-            Assert.assertNotEquals(null, games);
+            Assert.assertNotNull(games);
 
             // if not null should get more than one game (assuming db is not empty)
-            if (games != null)
-                Assert.assertNotEquals(null, games.data);
+            Assert.assertNotEquals(null, games.data);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,11 +74,10 @@ public class GameControllerTest {
                 Logger.logDebug("response = " + data);
             }
             // should get any response
-            Assert.assertNotEquals(null, response);
+            Assert.assertNotNull(response);
 
             // game number 1 should exist (assuming db is not empty)
-            if (response != null)
-                Assert.assertNotEquals(null, response.data);
+            Assert.assertNotEquals(null, response.data);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,14 +89,13 @@ public class GameControllerTest {
 
         // use the client to send the request
         try {
-            createdGameResponse = createGame(gson);
+            createdGameResponse = createGame();
 
             // should get any response
-            Assert.assertNotEquals(null, createdGameResponse);
+            Assert.assertNotNull(createdGameResponse);
 
             // game number 1 should exist (assuming db is not empty)
-            if (createdGameResponse != null)
-                Assert.assertNotEquals(null, createdGameResponse.data);
+            Assert.assertNotEquals(null, createdGameResponse.data);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,14 +107,13 @@ public class GameControllerTest {
 
         // use the client to send the request
         try {
-            deletedGameResponse = deleteGameCreated(gson, createdGameResponse);
+            deletedGameResponse = deleteGameCreated(createdGameResponse);
 
             // should get any response
-            Assert.assertNotEquals(null, deletedGameResponse);
+            Assert.assertNotNull(deletedGameResponse);
 
             // game number 1 should exist (assuming db is not empty)
-            if (deletedGameResponse != null)
-                Assert.assertEquals(true, gson.fromJson(deletedGameResponse.data, Boolean.class));
+            Assert.assertEquals(true, Startup.gson.fromJson(deletedGameResponse.data, Boolean.class));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,11 +139,11 @@ public class GameControllerTest {
         return response;
     }
 
-    private SocketResponse createGame(Gson gson) throws IOException {
+    private SocketResponse createGame() throws IOException {
         var newGame = new GameModel();
         newGame.cool_name = "TestingCreation" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
-        var newGameJson = gson.toJson(newGame);
+        var newGameJson = Startup.gson.toJson(newGame);
         var request = new SocketRequest("CREATE", "/api/game/", null, newGameJson);
 
         SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
@@ -152,10 +152,10 @@ public class GameControllerTest {
         return exchange.get(SocketResponse.class);
     }
 
-    private SocketResponse deleteGameCreated(Gson gson, SocketResponse gameResponse) throws IOException {
+    private SocketResponse deleteGameCreated(SocketResponse gameResponse) throws IOException {
         SocketRequest request;
         SocketExchange exchange;
-        var creationResponse = gson.fromJson(gameResponse.data, CreateItemDBResponse.class);
+        var creationResponse = Startup.gson.fromJson(gameResponse.data, CreateItemDBResponse.class);
 
         var query = new ParamRequestMap();
         query.put("id", creationResponse.id.intValue());

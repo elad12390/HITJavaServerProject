@@ -6,6 +6,7 @@ import com.hit.gamecalendar.main.java.services.abstracts.BaseService;
 import java.util.List;
 
 public class GameService extends BaseService<GameModel, GameRepository> {
+
     public GameService() {
         super(new GameRepository());
     }

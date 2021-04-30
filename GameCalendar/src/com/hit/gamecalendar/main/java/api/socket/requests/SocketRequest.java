@@ -1,6 +1,7 @@
 package com.hit.gamecalendar.main.java.api.socket.requests;
 
 import com.google.gson.Gson;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketRequest;
 
 public class SocketRequest implements ISocketRequest {
@@ -37,8 +38,7 @@ public class SocketRequest implements ISocketRequest {
     }
 
     public <T> T getData(Class<T> c) {
-        var gson = new Gson();
-        return gson.fromJson(this.getJsonData(), c);
+        return Startup.gson.fromJson(this.getJsonData(), c);
     }
 
     public void setData(String data) {

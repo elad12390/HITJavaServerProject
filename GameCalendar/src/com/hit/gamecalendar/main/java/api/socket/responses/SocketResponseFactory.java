@@ -1,11 +1,11 @@
 package com.hit.gamecalendar.main.java.api.socket.responses;
 
 import com.google.gson.Gson;
+import com.hit.gamecalendar.main.java.api.Startup;
 
 public class SocketResponseFactory {
     public static <T> SocketOKResponse createOkResponse(T data) {
-        var gson = new Gson();
-        return new SocketOKResponse(gson.toJson(data));
+        return new SocketOKResponse(Startup.gson.toJson(data));
     }
 
     public static <T extends Exception> SocketNotFoundExceptionResponse<String> createNotFoundResponse(String message, T data) {

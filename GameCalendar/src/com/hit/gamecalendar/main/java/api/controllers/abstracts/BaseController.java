@@ -1,6 +1,7 @@
 package com.hit.gamecalendar.main.java.api.controllers.abstracts;
 
 import com.google.gson.Gson;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.api.controllers.interfaces.IController;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -26,7 +27,7 @@ public abstract class BaseController implements IController {
     protected static <T> T getBodyAsEntity(HttpExchange exchange, T t) {
         try {
             var json = getBodyAsText(exchange);
-            return (new Gson()).fromJson(json, (Class<T>)t.getClass());
+            return Startup.gson.fromJson(json, (Class<T>)t.getClass());
         } catch (Exception e) {
             e.printStackTrace();
         }

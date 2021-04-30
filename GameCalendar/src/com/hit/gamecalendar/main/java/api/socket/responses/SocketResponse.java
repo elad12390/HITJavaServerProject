@@ -1,6 +1,7 @@
 package com.hit.gamecalendar.main.java.api.socket.responses;
 
 import com.google.gson.Gson;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.api.socket.enums.ESocketResponseStatus;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketResponse;
 
@@ -29,8 +30,7 @@ public class SocketResponse implements ISocketResponse<String> {
     }
 
     public <T> T getData(Class<T> c) {
-        var gson = new Gson();
-        return gson.fromJson(this.getDataJson(), c);
+        return Startup.gson.fromJson(this.getDataJson(), c);
     }
 
     public Boolean isSuccessful() {

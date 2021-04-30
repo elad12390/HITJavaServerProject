@@ -1,6 +1,7 @@
 package com.hit.gamecalendar.main.java.api.socket;
 
 import com.google.gson.Gson;
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketExchange;
 import com.hit.gamecalendar.main.java.api.socket.requests.SocketRequest;
@@ -29,7 +30,7 @@ public class SocketExchange implements ISocketExchange {
                 Logger.logError(e.toString());
             }
         }
-        return this.request != null ? (new Gson()).fromJson(this.request, SocketRequest.class) : null;
+        return this.request != null ? Startup.gson.fromJson(this.request, SocketRequest.class) : null;
     }
 
     @Override
@@ -41,12 +42,12 @@ public class SocketExchange implements ISocketExchange {
                 Logger.logError(e.toString());
             }
         }
-        return this.request != null ? (new Gson()).fromJson(this.request, c) : null;
+        return this.request != null ? Startup.gson.fromJson(this.request, c) : null;
     }
 
     @Override
     public <T> void send(T data) {
-        String output = (new Gson()).toJson(data);
+        String output = Startup.gson.toJson(data);
         try {
             out.writeUTF(output);
             out.flush();

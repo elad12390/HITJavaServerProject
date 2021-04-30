@@ -1,9 +1,11 @@
 package com.hit.gamecalendar.main.java.api.socket;
+import com.hit.gamecalendar.main.java.api.Config;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketPathAlreadyExistsException;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketHandler;
 import com.hit.gamecalendar.main.java.api.socket.requests.SocketRequest;
+import com.hit.gamecalendar.main.java.services.GameService;
 import main.java.com.hit.stringmatching.implementations.RobinKarpAlgoMatcherImpl;
 import main.java.com.hit.stringmatching.interfaces.IAlgoStringMatcher;
 
@@ -24,6 +26,7 @@ public class SocketDriver implements ISocketDriver {
     private static  Socket socket;
 
     private final ExecutorService threads = Executors.newCachedThreadPool();
+
     // path map
     private final SocketPathMap socketPaths = new SocketPathMap();
 
@@ -41,7 +44,6 @@ public class SocketDriver implements ISocketDriver {
         this.bindAddr = InetAddress.getLocalHost();
     }
 
-
     @Override
     public void listen() {
         threads.submit(() -> {
@@ -57,12 +59,13 @@ public class SocketDriver implements ISocketDriver {
 
     private Runnable handleClientRequest() {
         return () -> {
-            SocketExchange exchange = null;
+            SocketExchange exchange;
 
             try {
                 exchange = new SocketExchange(socket);
             } catch (IOException e) {
                 Logger.logError("Could not open socket " + e.toString());
+                return;
             }
 
             try {
@@ -70,11 +73,11 @@ public class SocketDriver implements ISocketDriver {
 
                 // we have request from client lets do something with our algorithm !
                 // lets try to find the requested request in the method list
-                IAlgoStringMatcher matcher = new RobinKarpAlgoMatcherImpl();
+
                 var key = socketPaths
                         .keySet()
                         .stream()
-                        .filter((k) -> matcher.match(request.getPath(), k) != -1)
+                        .filter((k) -> Config.getMatcher().match(request.getPath(), k) != -1)
                         .findAny().orElse(null);
 
                 if (key != null) {
