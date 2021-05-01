@@ -25,6 +25,33 @@ public class Startup {
         Startup.setup();
         Startup.run();
     }
+    /**
+     * Setup dependencies.
+     * */
+    private static void setup() {
+        try {
+            Logger.setLoggingLevel(Config.getLoggingLevel());
+            var dbFilePath = (new File(Config.getDatabaseFilePath())).getAbsolutePath();
+            Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
+
+            var gsonBuilder = new GsonBuilder();
+            gson = gsonBuilder.create();
+        } catch (Exception e) {
+            Logger.logError("Setup caught an exception: " + e);
+            throw e;
+        }
+    }
+
+    private static void run() {
+        try {
+            SocketDriver driver = new SocketDriver(Config.getServerPort());
+            // Controller contexts
+            SocketPathMaker.makePaths(driver);
+            driver.listen();
+        } catch (Exception e) {
+            Logger.logError("Server could not start, Exception: " + e);
+        }
+    }
 
     private static void setArgumentsConfig(Map<String, String> args) {
         if (args.containsKey("l"))
@@ -55,31 +82,4 @@ public class Startup {
         return res;
     }
 
-    /**
-     * Setup dependencies.
-     * */
-    private static void setup() {
-        try {
-            Logger.setLoggingLevel(Config.getLoggingLevel());
-            var dbFilePath = (new File(Config.getDatabaseFilePath())).getAbsolutePath();
-            Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
-
-            var gsonBuilder = new GsonBuilder();
-            gson = gsonBuilder.create();
-        } catch (Exception e) {
-            Logger.logError("Setup caught an exception: " + e);
-            throw e;
-        }
-    }
-
-    private static void run() {
-        try {
-            SocketDriver driver = new SocketDriver(Config.getServerPort());
-            // Controller contexts
-            SocketPathMaker.makePaths(driver);
-            driver.listen();
-        } catch (Exception e) {
-            Logger.logError("Server could not start, Exception: " + e);
-        }
-    }
 }
