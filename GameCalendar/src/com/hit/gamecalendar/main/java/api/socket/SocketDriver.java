@@ -5,9 +5,6 @@ import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketPathAlreadyExi
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketHandler;
 import com.hit.gamecalendar.main.java.api.socket.requests.SocketRequest;
-import com.hit.gamecalendar.main.java.services.GameService;
-import main.java.com.hit.stringmatching.implementations.RobinKarpAlgoMatcherImpl;
-import main.java.com.hit.stringmatching.interfaces.IAlgoStringMatcher;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -15,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SocketDriver implements ISocketDriver {
 
@@ -44,17 +42,21 @@ public class SocketDriver implements ISocketDriver {
         this.bindAddr = InetAddress.getLocalHost();
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void listen() {
+        AtomicBoolean isFinished = new AtomicBoolean(false);
         threads.submit(() -> {
             server = new ServerSocket(this.port);
             Logger.logInformation("Running at " + this.getSocketAddress().getHostAddress() + ":" + this.getPort());
-
+            isFinished.set(true);
             do {
                 socket = server.accept();
                 threads.submit(handleClientRequest());
             } while (true);
         });
+
+        while(!isFinished.get());
     }
 
     private Runnable handleClientRequest() {
@@ -74,12 +76,13 @@ public class SocketDriver implements ISocketDriver {
                 // we have request from client lets do something with our algorithm !
                 // lets try to find the requested request in the method list
 
+                Config.getMatcher().match("api", (String) socketPaths.keySet().toArray()[0]);
+
                 var key = socketPaths
                         .keySet()
                         .stream()
-                        .filter((k) -> Config.getMatcher().match(request.getPath(), k) != -1)
+                        .filter((k) -> Config.getMatcher().match(k, request.getPath()) != -1)
                         .findAny().orElse(null);
-
                 if (key != null) {
                     var p = socketPaths.get(key);
                     p.handle(exchange);

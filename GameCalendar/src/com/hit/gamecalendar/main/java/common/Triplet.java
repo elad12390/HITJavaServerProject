@@ -2,9 +2,9 @@ package com.hit.gamecalendar.main.java.common;
 
 public class Triplet<FIRST, SECOND, THIRD> implements Comparable<Triplet<FIRST, SECOND, THIRD>> {
 
-    public final FIRST first;
-    public final SECOND second;
-    public final THIRD third;
+    private final FIRST first;
+    private final SECOND second;
+    private final THIRD third;
 
     public Triplet(FIRST first, SECOND second, THIRD third) {
         this.first = first;
@@ -12,9 +12,21 @@ public class Triplet<FIRST, SECOND, THIRD> implements Comparable<Triplet<FIRST, 
         this.third = third;
     }
 
+    public FIRST getFirst() {
+        return first;
+    }
+
+    public SECOND getSecond() {
+        return second;
+    }
+
+    public THIRD getThird() {
+        return third;
+    }
+
     public static <FIRST, SECOND, THIRD> Triplet<FIRST, SECOND, THIRD> of(FIRST first,
-                                                         SECOND second,
-                                                         THIRD third) {
+                                                                          SECOND second,
+                                                                          THIRD third) {
         return new Triplet<>(first, second, third);
     }
 

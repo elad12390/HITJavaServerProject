@@ -1,10 +1,9 @@
 package com.hit.gamecalendar.main.java.api.socket.interfaces;
 
-import java.io.IOException;
 import java.net.InetAddress;
 
 public interface ISocketDriver {
-    void listen() throws IOException, InterruptedException;
+    void listen();
     InetAddress getSocketAddress();
     int getPort();
 }

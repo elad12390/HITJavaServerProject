@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Timer;
-;
 
+@SuppressWarnings("unchecked")
 public class Cache implements ICache {
     private final HashMap<String, Object> _cache = new HashMap<>();
     private static final long DEFAULT_CACHE_DURATION = 60;

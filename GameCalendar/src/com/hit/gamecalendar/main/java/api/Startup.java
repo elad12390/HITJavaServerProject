@@ -4,19 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hit.gamecalendar.main.java.api.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.pathmaker.SocketPathMaker;
-import com.hit.gamecalendar.main.java.common.enums.ELoggingLevel;
+import com.hit.gamecalendar.main.java.dao.GameType;
+import com.hit.gamecalendar.main.java.dao.GameTypeDeserializer;
 import com.hit.gamecalendar.main.java.dao.SqliteDatabase;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class Startup {
     public static SqliteDatabase db;
     public static Gson gson;
-
 
     public static void main(String[] args) {
         var argumentMap = getFormattedArgumentMap(args);
@@ -35,6 +34,7 @@ public class Startup {
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
 
             var gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(GameType.class, new GameTypeDeserializer());
             gson = gsonBuilder.create();
         } catch (Exception e) {
             Logger.logError("Setup caught an exception: " + e);

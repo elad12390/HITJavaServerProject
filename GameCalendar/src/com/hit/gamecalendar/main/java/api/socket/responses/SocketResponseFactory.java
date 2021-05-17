@@ -1,6 +1,5 @@
 package com.hit.gamecalendar.main.java.api.socket.responses;
 
-import com.google.gson.Gson;
 import com.hit.gamecalendar.main.java.api.Startup;
 
 public class SocketResponseFactory {

@@ -22,6 +22,8 @@ public class ReflectionHelper {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
+        if (resources == null) return null;
+
         List<File> dirs = new ArrayList<>();
         while (resources.hasMoreElements()) {
             try {
@@ -32,10 +34,14 @@ public class ReflectionHelper {
             }
         }
         List<Class<?>> classes = new ArrayList<>();
-        for (File directory : dirs)
-            classes.addAll(findClasses(directory, packageName, a));
+        for (File directory : dirs) {
+            var foundClasses = findClasses(directory, packageName, a);
+            assert foundClasses != null;
 
-        return classes.toArray(new Class[classes.size()]);
+            classes.addAll(foundClasses);
+        }
+
+        return classes.toArray(new Class[0]);
 
     }
 
@@ -45,10 +51,14 @@ public class ReflectionHelper {
             return classes;
 
         File[] files = directory.listFiles();
+        if (files == null) return null;
         for (File file : files) {
             if (file.isDirectory()) {
                 assert !file.getName().contains(".");
-                classes.addAll(findClasses(file, (!packageName.equals("") ? packageName + "." : packageName) + file.getName(), annotation));
+                var foundClasses = findClasses(file, (!packageName.equals("") ? packageName + "." : packageName) + file.getName(), annotation);
+                assert foundClasses != null;
+
+                classes.addAll(foundClasses);
             } else if (file.getName().endsWith(".class"))
                 try {
                     var c = Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6));

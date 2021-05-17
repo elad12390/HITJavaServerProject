@@ -10,6 +10,15 @@
     <orderEntry type="library" name="gson" level="project" />
     <orderEntry type="library" name="junit-4.12" level="project" />
     <orderEntry type="library" name="sqlite" level="project" />
-    <orderEntry type="library" name="stringMatchers" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/stringMatchers.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="StringMatchers" level="project" />
   </component>
 </module>

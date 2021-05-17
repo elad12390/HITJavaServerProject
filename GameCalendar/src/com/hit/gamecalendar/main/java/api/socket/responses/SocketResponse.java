@@ -1,13 +1,12 @@
 package com.hit.gamecalendar.main.java.api.socket.responses;
 
-import com.google.gson.Gson;
 import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.api.socket.enums.ESocketResponseStatus;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketResponse;
 
 public class SocketResponse implements ISocketResponse<String> {
-    public ESocketResponseStatus statusCode;
-    public String data;
+    private final ESocketResponseStatus statusCode;
+    private final String data;
 
     public SocketResponse(String message, ESocketResponseStatus statusCode, String data) {
         this.statusCode = statusCode;

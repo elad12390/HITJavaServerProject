@@ -2,7 +2,6 @@ package com.hit.gamecalendar.main.java.api;
 
 
 import com.hit.gamecalendar.main.java.common.enums.ELoggingLevel;
-import com.hit.gamecalendar.main.java.common.logger.Logger;
 import main.java.com.hit.stringmatching.implementations.KnuthMorrisPrattAlgoMatcherImpl;
 import main.java.com.hit.stringmatching.implementations.NaiveAlgoMatcherImpl;
 import main.java.com.hit.stringmatching.implementations.RobinKarpAlgoMatcherImpl;

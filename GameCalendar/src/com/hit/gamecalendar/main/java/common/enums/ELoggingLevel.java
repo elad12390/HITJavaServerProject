@@ -5,7 +5,7 @@ public enum ELoggingLevel {
     INFORMATION(1),
     DEBUG(2);
 
-    private int numVal;
+    private final int numVal;
 
     ELoggingLevel(int i) {
         this.numVal = i;

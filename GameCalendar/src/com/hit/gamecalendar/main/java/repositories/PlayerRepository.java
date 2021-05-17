@@ -1,32 +1,33 @@
 package com.hit.gamecalendar.main.java.repositories;
 
 import com.hit.gamecalendar.main.java.api.Startup;
-import com.hit.gamecalendar.main.java.dao.GameModel;
+import com.hit.gamecalendar.main.java.dao.PlayerModel;
 import com.hit.gamecalendar.main.java.repositories.abstracts.BaseRepository;
 import com.hit.gamecalendar.main.java.repositories.interfaces.IRepository;
 
 import java.util.List;
 
-public class GameRepository extends BaseRepository implements IRepository<GameModel> {
-    public GameRepository() {
+public class PlayerRepository extends BaseRepository implements IRepository<PlayerModel> {
+    public PlayerRepository() {
         super();
     }
 
+
     @Override
     public String tableName() {
-        return "Game";
+        return "Player";
     }
 
     @Override
-    public List<GameModel> getAll() {
+    public List<PlayerModel> getAll() {
 
-        List<GameModel> data;
+        List<PlayerModel> data;
         final String tableName = this.tableName();
 
-        if (this.cache.exists(tableName)) {
+        if(this.cache.exists(tableName)) {
             data = this.cache.get(tableName);
         } else {
-            data = Startup.db.getAllTableItems(tableName, new GameModel());
+            data = Startup.db.getAllTableItems(tableName, new PlayerModel());
             this.cache.set(tableName, data);
         }
 
@@ -34,25 +35,25 @@ public class GameRepository extends BaseRepository implements IRepository<GameMo
     }
 
     @Override
-    public GameModel getItemById(int id) {
-        GameModel data;
+    public PlayerModel getItemById(int id) {
+        PlayerModel data;
         final String tableName = this.tableName();
 
         if(this.cache.exists(tableName)) {
-            List<GameModel> allData = this.cache.get(tableName);
+            List<PlayerModel> allData = this.cache.get(tableName);
 
             data = allData.stream()
                     .filter((game) -> game.getId() ==  id)
                     .findAny()
                     .orElse(null);
         } else {
-            data = Startup.db.getTableItemById(tableName, id, new GameModel());
+            data = Startup.db.getTableItemById(tableName, id, new PlayerModel());
         }
         return data;
     }
 
     @Override
-    public Long createTableItem(GameModel m) {
+    public Long createTableItem(PlayerModel m) {
         final String tableName = this.tableName();
 
         this.cache.remove(tableName);
@@ -60,7 +61,7 @@ public class GameRepository extends BaseRepository implements IRepository<GameMo
     }
 
     @Override
-    public boolean updateTableItem(int id, GameModel m) {
+    public boolean updateTableItem(int id, PlayerModel m) {
         final String tableName = this.tableName();
 
         this.cache.remove(tableName);

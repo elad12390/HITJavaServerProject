@@ -39,6 +39,10 @@ public class SocketPathMaker {
         var typesWithControllerAnnotation = ReflectionHelper.getClassesWithAnnotation(PACKAGE_NAME, Controller.class);
 
         SocketPathMaker.methodMap = new HashMap<>();
+
+
+        if (typesWithControllerAnnotation == null) return;
+
         for (var controller: typesWithControllerAnnotation) {
             // getRequest the current controller annotation (for the parameters)
             var controllerAnnotation = controller.getAnnotation(Controller.class);
@@ -100,11 +104,13 @@ public class SocketPathMaker {
             catch (SocketNotFoundException e) {
                 e.getStackTrace();
                 Logger.logError(e.getMessage());
-                SocketResponseFactory.createNotFoundResponse(e.getMessage(), e);
+                var response = SocketResponseFactory.createNotFoundResponse(e.getMessage(), e);
+                exchange.send(response);
             }
             catch (Exception e) {
                 Logger.logError("Error occurred in http exchange " + e);
-                SocketResponseFactory.createExceptionResponse("Error occurred in http exchange", e);
+                var response = SocketResponseFactory.createExceptionResponse("Error occurred in http exchange", e);
+                exchange.send(response);
             } finally {
                 exchange.close();
             }

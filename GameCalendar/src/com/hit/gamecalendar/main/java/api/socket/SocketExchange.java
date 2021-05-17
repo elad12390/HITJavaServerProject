@@ -1,6 +1,5 @@
 package com.hit.gamecalendar.main.java.api.socket;
 
-import com.google.gson.Gson;
 import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketExchange;

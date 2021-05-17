@@ -13,7 +13,7 @@ import com.hit.gamecalendar.main.java.api.socket.responses.SocketResponseFactory
 import com.hit.gamecalendar.main.java.dao.GameModel;
 import com.hit.gamecalendar.main.java.services.GameService;
 
-@Controller(path = "game")
+@Controller(path = "Game")
 public class GameController extends BaseController {
 
     public GameController() {
@@ -27,6 +27,17 @@ public class GameController extends BaseController {
         Logger.logInformation("Client requested all games");
 
         var res = SocketResponseFactory.createOkResponse(service.getAllGames());
+
+        exchange.send(res);
+    }
+
+    @SocketMethod(template = "Next", method = ESocketMethod.Get)
+    public static void getNextGame(SocketExchange exchange) {
+        var service = new GameService();
+
+        Logger.logInformation("Client requested all games");
+
+        var res = SocketResponseFactory.createOkResponse(service.getNextGame());
 
         exchange.send(res);
     }

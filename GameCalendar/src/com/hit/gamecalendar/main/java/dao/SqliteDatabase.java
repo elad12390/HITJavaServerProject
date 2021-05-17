@@ -1,6 +1,5 @@
 package com.hit.gamecalendar.main.java.dao;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.hit.gamecalendar.main.java.api.Startup;
@@ -10,16 +9,16 @@ import com.hit.gamecalendar.main.java.dao.interfaces.IDatabase;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
-import java.util.function.Function;
 
 
 public class SqliteDatabase implements IDatabase {
-    String _connectionString;
+    private final String _connectionString;
 
     // allow only one query at a time to the database
-    private Semaphore semaphore = new Semaphore(1);
+    private final Semaphore semaphore = new Semaphore(1);
 
     public SqliteDatabase(String connectionString) {
         this._connectionString = connectionString;
@@ -199,29 +198,30 @@ public class SqliteDatabase implements IDatabase {
     // *********************************** Private Functions ************************************ //
 
 
-    private <T> JsonObject putData(
+    private <T> void putData(
             T data, ResultSet resultSet, ResultSetMetaData resultSetMetaData,
             JsonObject obj, int i
     ) throws NoSuchFieldException, SQLException {
 
-        var f = data.getClass().getDeclaredField(resultSetMetaData.getColumnName(i));
+        var fieldName = resultSetMetaData.getColumnName(i);
+
+        var lowerCase = fieldName.substring(0,1).toLowerCase() + fieldName.substring(1);
+        var f = data.getClass().getDeclaredField(lowerCase);
         f.setAccessible(true);
 
         switch (resultSetMetaData.getColumnType(i)) {
-            case Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT -> addIntegerToObj(resultSetMetaData, obj, i, resultSet.getInt(i));
+            case Types.TINYINT, Types.SMALLINT, Types.INTEGER, Types.BIGINT -> addIntegerToObj(obj, lowerCase, resultSet.getInt(i));
 
-            case Types.REAL, Types.DOUBLE, Types.NUMERIC, Types.DECIMAL -> addDoubleToObj(resultSetMetaData, obj, i, resultSet.getDouble(i));
+            case Types.REAL, Types.DOUBLE, Types.NUMERIC, Types.DECIMAL -> addDoubleToObj(obj, lowerCase, resultSet.getDouble(i));
 
-            case Types.FLOAT -> addFloatToObj(resultSetMetaData, obj, i, resultSet.getFloat(i));
+            case Types.FLOAT -> addFloatToObj(obj, lowerCase, resultSet.getFloat(i));
 
-            case Types.BIT, Types.BOOLEAN -> addBoolean(resultSet, resultSetMetaData, obj, i);
+            case Types.BIT, Types.BOOLEAN -> addBoolean(resultSet, obj, i, lowerCase);
 
-            case Types.CHAR -> addCharToObj(resultSet, resultSetMetaData, obj, i);
+            case Types.CHAR -> addCharToObj(resultSet, obj, i, lowerCase);
 
-            default -> addChildObj(resultSet, resultSetMetaData, obj, i);
+            default -> addChildObj(resultSet, obj, i, lowerCase);
         }
-
-        return obj;
     }
 
     private Connection createConnection(boolean lock) {
@@ -247,27 +247,27 @@ public class SqliteDatabase implements IDatabase {
         }
     }
 
-    private void addChildObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {
-        obj.add(resultSetMetaData.getColumnName(i), Startup.gson.toJsonTree(resultSet.getObject(i)));
+    private void addChildObj(ResultSet resultSet, JsonObject obj, int i, String fieldName) throws SQLException {
+        obj.add(fieldName, Startup.gson.toJsonTree(resultSet.getObject(i)));
     }
 
-    private void addCharToObj(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {
-        obj.addProperty(resultSetMetaData.getColumnName(i), (char) resultSet.getObject(i));
+    private void addCharToObj(ResultSet resultSet, JsonObject obj, int i, String fieldName) throws SQLException {
+        obj.addProperty(fieldName, (char) resultSet.getObject(i));
     }
 
-    private void addDoubleToObj(ResultSetMetaData resultSetMetaData, JsonObject obj, int i, double aDouble) throws SQLException {
-        obj.addProperty(resultSetMetaData.getColumnName(i), aDouble);
+    private void addDoubleToObj(JsonObject obj, String fieldName, double aDouble) {
+        obj.addProperty(fieldName, aDouble);
     }
 
-    private void addFloatToObj(ResultSetMetaData resultSetMetaData, JsonObject obj, int i, double aFloat) throws SQLException {
-        obj.addProperty(resultSetMetaData.getColumnName(i), aFloat);
+    private void addFloatToObj(JsonObject obj, String fieldName, double aFloat) {
+        obj.addProperty(fieldName, aFloat);
     }
 
-    private void addIntegerToObj(ResultSetMetaData resultSetMetaData, JsonObject obj, int i, float anInt) throws SQLException {
-        obj.addProperty(resultSetMetaData.getColumnName(i), anInt);
+    private void addIntegerToObj(JsonObject obj, String fieldName, float anInt) {
+        obj.addProperty(fieldName, anInt);
     }
 
-    private void addBoolean(ResultSet resultSet, ResultSetMetaData resultSetMetaData, JsonObject obj, int i) throws SQLException {
-        obj.addProperty(resultSetMetaData.getColumnName(i), resultSet.getBoolean(i));
+    private void addBoolean(ResultSet resultSet, JsonObject obj, int i, String fieldName) throws SQLException {
+        obj.addProperty(fieldName, resultSet.getBoolean(i));
     }
 }
