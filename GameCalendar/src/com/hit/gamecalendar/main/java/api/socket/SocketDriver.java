@@ -1,5 +1,7 @@
 package com.hit.gamecalendar.main.java.api.socket;
 import com.hit.gamecalendar.main.java.api.Config;
+import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketNotFoundException;
+import com.hit.gamecalendar.main.java.api.socket.responses.SocketResponseFactory;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketPathAlreadyExistsException;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketDriver;
@@ -86,9 +88,13 @@ public class SocketDriver implements ISocketDriver {
                 if (key != null) {
                     var p = socketPaths.get(key);
                     p.handle(exchange);
+                } else {
+                    throw new SocketNotFoundException("Request path not found !");
                 }
             } catch (Exception e) {
                 Logger.logError("Could not handle request " + e.toString());
+
+                exchange.send(SocketResponseFactory.createExceptionResponse(e.getMessage()));
                 exchange.close();
             }
         };

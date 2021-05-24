@@ -36,6 +36,22 @@ public class TeamControllerTest {
     }
 
 
+    @Test
+    public void notCommandTest() {
+
+        // use the client to send the request
+        try {
+            SocketResponse exceptionRes = notCommand();
+            Logger.logDebug("response = " + exceptionRes.toString());
+
+            // should not get any response
+            Assert.assertNotNull(exceptionRes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //********************************** Team Tests *****************************************//
 
     public static SocketResponse createTeamResponse = null;
@@ -260,6 +276,14 @@ public class TeamControllerTest {
 
 
 
+
+
+    private SocketResponse notCommand() throws IOException {
+        var request = new SocketRequest("GET", "/api/404/", null, "Testing");
+        SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
+        exchange.send(request);
+        return exchange.get(SocketResponse.class);
+    }
 
     private SocketResponse getAllPlayers() throws IOException {
         var request = new SocketRequest("GET", "/api/Team/Player/", null, "Testing");
