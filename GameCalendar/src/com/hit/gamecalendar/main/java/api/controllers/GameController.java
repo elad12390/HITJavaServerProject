@@ -35,7 +35,7 @@ public class GameController extends BaseController {
     public static void getNextGame(SocketExchange exchange) {
         var service = new GameService();
 
-        Logger.logInformation("Client requested all games");
+        Logger.logInformation("Client requested next game");
 
         var res = SocketResponseFactory.createOkResponse(service.getNextGame());
 
