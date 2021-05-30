@@ -31,7 +31,7 @@ public class GameModel {
     }
 
     public GameModel(Instant dateTime, GameType type, int roundNumber, String court, int hostingTeamId, int participatingTeamId, String result) {
-        this.dateTime = formatter.format(dateTime);
+        this.dateTime = formatter.format(Date.from(dateTime));
         this.type = type.getValue();
         this.roundNumber = roundNumber;
         this.court = court;

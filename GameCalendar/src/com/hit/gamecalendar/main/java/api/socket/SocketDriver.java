@@ -23,7 +23,6 @@ public class SocketDriver implements ISocketDriver {
     private final InetAddress bindAddr;
 
     private static ServerSocket server;
-    private static  Socket socket;
 
     private final ExecutorService threads = Executors.newCachedThreadPool();
 
@@ -53,20 +52,20 @@ public class SocketDriver implements ISocketDriver {
             Logger.logInformation("Running at " + this.getSocketAddress().getHostAddress() + ":" + this.getPort());
             isFinished.set(true);
             do {
-                socket = server.accept();
-                threads.submit(handleClientRequest());
+                Socket s = server.accept();
+                threads.submit(handleClientRequest(s));
             } while (true);
         });
 
         while(!isFinished.get());
     }
 
-    private Runnable handleClientRequest() {
+    private Runnable handleClientRequest(Socket s) {
         return () -> {
             SocketExchange exchange;
 
             try {
-                exchange = new SocketExchange(socket);
+                exchange = new SocketExchange(s);
             } catch (IOException e) {
                 Logger.logError("Could not open socket " + e.toString());
                 return;
@@ -85,6 +84,7 @@ public class SocketDriver implements ISocketDriver {
                         .stream()
                         .filter((k) -> Config.getMatcher().match(k, request.getPath()) != -1)
                         .findAny().orElse(null);
+
                 if (key != null) {
                     var p = socketPaths.get(key);
                     p.handle(exchange);
