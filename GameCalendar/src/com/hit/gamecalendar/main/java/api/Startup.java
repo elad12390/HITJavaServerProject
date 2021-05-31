@@ -12,14 +12,19 @@ import com.hit.gamecalendar.main.java.common.logger.Logger;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import com.hit.clock.main.java.Clock;
 
 public class Startup {
     public static SqliteDatabase db;
     public static Gson gson;
+    public static Clock clock = new Clock();
 
     public static void main(String[] args) {
         var argumentMap = getFormattedArgumentMap(args);
         setArgumentsConfig(argumentMap);
+
+        // NISSIM THIS IS WHERE I START IT BECAUSE MY SERVICE IS SCOPED
+        Startup.clock.start();
 
         Startup.setup();
         Startup.run();
@@ -29,6 +34,7 @@ public class Startup {
      * */
     private static void setup() {
         try {
+
             Logger.setLoggingLevel(Config.getLoggingLevel());
             var dbFilePath = (new File(Config.getDatabaseFilePath())).getAbsolutePath();
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
@@ -44,6 +50,7 @@ public class Startup {
 
     private static void run() {
         try {
+
             SocketDriver driver = new SocketDriver(Config.getServerPort());
             // Controller contexts
             SocketPathMaker.makePaths(driver);

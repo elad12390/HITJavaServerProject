@@ -1,5 +1,6 @@
 package com.hit.gamecalendar.main.java.common.logger;
 
+import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.common.enums.EAnsiColor;
 import com.hit.gamecalendar.main.java.common.enums.ELoggingLevel;
 
@@ -12,7 +13,7 @@ public class Logger implements ILogger {
     private static final Function<String, String> FORMAT =
             (String s) ->
                 EAnsiColor.ANSI_GREEN.getAnsiCharacter() +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) +
+                        Startup.clock.getTime() +
                 " ~ $" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + s;
 
     public static void setLoggingLevel(ELoggingLevel loggingLevel) {
@@ -37,6 +38,6 @@ public class Logger implements ILogger {
         var callerClassPath = callerMethod.getClassName().split("\\.");
         var callerClassName = callerClassPath[callerClassPath.length - 1];
         if (loggingLevel.compareNum(ELoggingLevel.ERROR) >= 0)
-            System.out.println(FORMAT.apply(EAnsiColor.ANSI_RED.getAnsiCharacter() + "[ERROR]" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + ": Error in " + callerClassName + " in method " + callerMethodName + s));
+            System.out.println(FORMAT.apply(EAnsiColor.ANSI_RED.getAnsiCharacter() + "[ERROR]" + EAnsiColor.ANSI_RESET.getAnsiCharacter() + ": Error in " + callerClassName + " in method " + callerMethodName + ": " + s));
     }
 }

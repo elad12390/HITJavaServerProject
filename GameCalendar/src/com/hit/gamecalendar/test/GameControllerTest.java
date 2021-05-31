@@ -30,7 +30,7 @@ public class GameControllerTest {
     public static SocketResponse deletedGameResponse = null;
 
     @BeforeClass
-    public static void StartServer() throws IOException, InterruptedException {
+    public static void StartServer() throws IOException {
         String[] args = {
                 "--l=d",
                 "--m=kmp"

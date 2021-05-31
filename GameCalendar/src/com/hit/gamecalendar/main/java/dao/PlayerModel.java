@@ -1,5 +1,7 @@
 package com.hit.gamecalendar.main.java.dao;
 
+import com.hit.gamecalendar.main.java.api.Startup;
+
 public class PlayerModel {
     private int id;
     private int teamId;
@@ -7,16 +9,28 @@ public class PlayerModel {
     private String password;
     private String firstName;
     private String lastName;
+    private String logDateTime = Startup.clock.getTime();
 
     public PlayerModel() {
+        this.logDateTime = Startup.clock.getTime();
     }
 
     public PlayerModel(int teamId, String username, String password, String firstName, String lastName) {
+        this.logDateTime = Startup.clock.getTime();
+
         this.teamId = teamId;
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public String getLogDateTime() {
+        return logDateTime;
+    }
+
+    public void setLogDateTime(String logDateTime) {
+        this.logDateTime = logDateTime;
     }
 
     public int getId() {

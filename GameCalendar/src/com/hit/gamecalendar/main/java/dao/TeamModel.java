@@ -1,20 +1,33 @@
 package com.hit.gamecalendar.main.java.dao;
 
+import com.hit.gamecalendar.main.java.api.Startup;
+
 public class TeamModel {
     private int id;
     private String name;
     private String homeCourtName;
     private String homeCourtAddress;
     private String homeCourtPhone;
+    private String logDateTime = Startup.clock.getTime();
 
     public TeamModel() {
+        this.logDateTime = Startup.clock.getTime();
     }
 
     public TeamModel(String name, String homeCourtName, String homeCourtAddress, String homeCourtPhone) {
+        this.logDateTime = Startup.clock.getTime();
         this.name = name;
         this.homeCourtName = homeCourtName;
         this.homeCourtAddress = homeCourtAddress;
         this.homeCourtPhone = homeCourtPhone;
+    }
+
+    public String getLogDateTime() {
+        return logDateTime;
+    }
+
+    public void setLogDateTime(String logDateTime) {
+        this.logDateTime = logDateTime;
     }
 
     public int getId() {

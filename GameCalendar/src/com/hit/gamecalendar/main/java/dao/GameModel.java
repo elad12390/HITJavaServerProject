@@ -1,5 +1,7 @@
 package com.hit.gamecalendar.main.java.dao;
 
+import com.hit.gamecalendar.main.java.api.Startup;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -16,11 +18,13 @@ public class GameModel {
     private int participatingTeamId;
     private String result = "";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private String logDateTime = Startup.clock.getTime();
 
     public GameModel() {
     }
 
     public GameModel(String dateTime, GameType type, int roundNumber, String court, int hostingTeamId, int participatingTeamId, String result) {
+
         this.dateTime = dateTime;
         this.type = type.getValue();
         this.roundNumber = roundNumber;
@@ -31,6 +35,8 @@ public class GameModel {
     }
 
     public GameModel(Instant dateTime, GameType type, int roundNumber, String court, int hostingTeamId, int participatingTeamId, String result) {
+        this.logDateTime = Startup.clock.getTime();
+
         this.dateTime = formatter.format(Date.from(dateTime));
         this.type = type.getValue();
         this.roundNumber = roundNumber;
@@ -38,6 +44,14 @@ public class GameModel {
         this.hostingTeamId = hostingTeamId;
         this.participatingTeamId = participatingTeamId;
         this.result = result;
+    }
+
+    public String getLogDateTime() {
+        return logDateTime;
+    }
+
+    public void setLogDateTime(String logDateTime) {
+        this.logDateTime = logDateTime;
     }
 
     public int getId() {
