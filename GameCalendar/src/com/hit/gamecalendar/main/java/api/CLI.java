@@ -12,8 +12,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CLI implements Runnable {
+
     public static final String HELP_TEXT = "Commands:" +
             "\n\tstart - starts the server" +
             "\n\tstop - stops the server" +
@@ -23,11 +26,6 @@ public class CLI implements Runnable {
 
     Scanner scanner = new Scanner(System.in);
     Thread thisThread;
-    public void start() {
-        thisThread = (new Thread(this));
-        thisThread.start();
-        System.out.println();
-    }
     public void run() {
         System.out.println(HELP_TEXT);
         while (Startup.isRunning.get()) {
@@ -64,8 +62,8 @@ public class CLI implements Runnable {
                 }
                 break;
             case "exit":
-                Startup.shutdown();
-                Thread.sleep(10);
+                Startup.threads.submit(Startup::shutdown);
+                Startup.isRunning.set(false);
                 break;
             case "help":
                 System.out.println(HELP_TEXT);
@@ -77,10 +75,25 @@ public class CLI implements Runnable {
                     var reqObj = getRequestFromJsonOrNull(json);
                     if (reqObj != null) {
                         if (Startup.isServerRunning.get()) {
-                            SocketExchange exchange = new SocketExchange(new Socket(Config.getClientAddress(), Config.getServerPort()));
-                            exchange.send(reqObj);
-                            var result = exchange.get(SocketResponse.class);
-                            Logger.logInformation(result.getDataJson());
+                            Startup.threads.submit(() -> {
+                                SocketExchange exchange = null;
+                                try {
+                                    exchange = new SocketExchange(new Socket(Config.getClientAddress(), Config.getServerPort()));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    exchange.send(reqObj);
+                                    var result = exchange.get(SocketResponse.class);
+                                    Logger.logInformation(result.getDataJson());
+                                } catch (Exception e) {
+                                    Logger.logError(e.toString());
+                                }
+                                finally {
+                                    exchange.close();
+
+                                }
+                            });
                         } else {
                             Logger.logInformation("Server is not running, what are you trying to do ?");
                         }
@@ -88,6 +101,7 @@ public class CLI implements Runnable {
                         Logger.logInformation("Json is invalid. please try again.");
                     }
                 }
+                break;
         }
     }
 

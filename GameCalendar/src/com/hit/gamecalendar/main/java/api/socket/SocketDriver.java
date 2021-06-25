@@ -4,6 +4,7 @@ import com.hit.gamecalendar.main.java.api.Startup;
 import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketException;
 import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketNotFoundException;
 import com.hit.gamecalendar.main.java.api.socket.responses.SocketResponseFactory;
+import com.hit.gamecalendar.main.java.common.cache.Cache;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketPathAlreadyExistsException;
 import com.hit.gamecalendar.main.java.api.socket.interfaces.ISocketDriver;
@@ -62,6 +63,10 @@ public class SocketDriver implements ISocketDriver {
                 if (!e.getMessage().equals("Socket closed"))
                     e.printStackTrace();
             }
+
+            // if server was shutdown cancel all timers. (because cache no longer exists)
+            Cache.cancelTimers();
+            Cache.clear();
         });
 
         while(!isFinished.get());

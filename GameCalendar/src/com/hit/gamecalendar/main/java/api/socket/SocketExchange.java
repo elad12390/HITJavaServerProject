@@ -59,8 +59,15 @@ public class SocketExchange implements ISocketExchange {
     @Override
     public void close() {
         try {
-            if (!this.socket.isClosed())
+            if (!this.socket.isInputShutdown()) {
+                this.socket.shutdownInput();
+            }
+            if (!this.socket.isOutputShutdown()) {
+                this.socket.shutdownOutput();
+            }
+            if (!this.socket.isClosed()) {
                 this.socket.close();
+            }
         } catch (Exception e) {
             Logger.logError("Could not close socket");
         }

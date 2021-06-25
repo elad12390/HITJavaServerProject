@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hit.gamecalendar.main.java.api.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.pathmaker.SocketPathMaker;
+import com.hit.gamecalendar.main.java.common.cache.Cache;
 import com.hit.gamecalendar.main.java.dao.GameType;
 import com.hit.gamecalendar.main.java.dao.GameTypeDeserializer;
 import com.hit.gamecalendar.main.java.dao.SqliteDatabase;
@@ -13,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +28,8 @@ public class Startup {
     public static AtomicBoolean isServerRunning = new AtomicBoolean(false);
     public static AtomicBoolean isRunning = new AtomicBoolean(true);
     private static CLI cli;
+    public static ExecutorService threads = Executors.newCachedThreadPool();
+
 
     public static void main(String[] args) {
         var argumentMap = getFormattedArgumentMap(args);
@@ -74,31 +79,27 @@ public class Startup {
         } catch (Exception e) {
             System.out.println(e);
         }
-        SocketDriver.threads.shutdown();
-        SocketDriver.threads.awaitTermination(1, TimeUnit.SECONDS);
+        SocketDriver.threads.shutdownNow();
     }
 
     private static void runCLI() {
         cli = new CLI();
-        cli.start();
+        threads.submit(cli);
     }
 
     public static void shutdown() {
-        (new Thread(() -> {
-            try {
-                Startup.clock.stop();
+        try {
+            Startup.clock.stop();
 
-                if (isServerRunning.get()) {
-                    Startup.closeServer();
-                }
-
-                cli.scanner.close();
-                Startup.isRunning.set(false);
-                cli.thisThread.join();
-            } catch (Exception e) {
-                Logger.logError(e.toString());
+            if (isServerRunning.get()) {
+                Startup.closeServer();
             }
-        })).start();
+
+            cli.scanner.close();
+            Startup.threads.shutdownNow();
+        } catch (Exception e) {
+            Logger.logError(e.toString());
+        }
     }
 
     private static void setArgumentsConfig(Map<String, String> args) {
