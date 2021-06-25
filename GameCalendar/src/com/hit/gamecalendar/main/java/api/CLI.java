@@ -18,7 +18,7 @@ public class CLI implements Runnable {
             "\n\tstart - starts the server" +
             "\n\tstop - stops the server" +
             "\n\tsend [JSON] - sends the [JSON] to the server and presents the result - for example send {\"method\":\"GET\",\"path\":\"/api/Game/\"}" +
-            "\n\thelp - print this text";
+            "\n\thelp - print this menu";
 
 
     Scanner scanner = new Scanner(System.in);
