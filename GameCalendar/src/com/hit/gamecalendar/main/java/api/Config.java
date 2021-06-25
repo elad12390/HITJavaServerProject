@@ -7,11 +7,15 @@ import main.java.com.hit.stringmatching.implementations.NaiveAlgoMatcherImpl;
 import main.java.com.hit.stringmatching.implementations.RobinKarpAlgoMatcherImpl;
 import main.java.com.hit.stringmatching.interfaces.IAlgoStringMatcher;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Config {
     private static ELoggingLevel loggingLevel = ELoggingLevel.DEBUG;
-    private static String DATABASE_FILE_PATH = "src/com/hit/gamecalendar/main/resources/database/gamedb.db";
+    private static String DATABASE_FILE_PATH = "GameCalendar/src/com/hit/gamecalendar/main/resources/database/gamedb.db";
     private static int serverPort = 9110;
-    private static IAlgoStringMatcher matcher = new RobinKarpAlgoMatcherImpl();
+    private static IAlgoStringMatcher matcher = new KnuthMorrisPrattAlgoMatcherImpl();
 
     public static ELoggingLevel getLoggingLevel() {
         return loggingLevel;
@@ -39,6 +43,10 @@ public class Config {
 
     public static int getServerPort() {
         return serverPort;
+    }
+
+    public static InetAddress getClientAddress() throws UnknownHostException {
+        return InetAddress.getLocalHost();
     }
 
     public static void setServerPort(int serverPort) {

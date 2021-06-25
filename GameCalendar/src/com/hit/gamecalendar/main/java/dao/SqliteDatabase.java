@@ -33,7 +33,7 @@ public class SqliteDatabase implements IDatabase {
 
     @Override
     public <T> List<T> getAllTableItems(String table, T data) {
-        Connection connection = createConnection(false);
+        Connection connection = createConnection(true);
         if (connection == null) return null;
         try {
             // connect to database.
@@ -59,13 +59,13 @@ public class SqliteDatabase implements IDatabase {
             Logger.logError("Exception occurred in database, " + e);
             return null;
         } finally {
-            closeConnection(connection, false);
+            closeConnection(connection, true);
         }
     }
 
     @Override
     public <T> T getTableItemById(String table, int id, T data) {
-        Connection connection = createConnection(false);
+        Connection connection = createConnection(true);
         if (connection == null) return null;
 
         try {
@@ -88,7 +88,7 @@ public class SqliteDatabase implements IDatabase {
             Logger.logError("Exception occurred in database: " + e);
             return null;
         } finally {
-            closeConnection(connection, false);
+            closeConnection(connection, true);
         }
     }
 

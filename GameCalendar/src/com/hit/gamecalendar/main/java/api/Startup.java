@@ -10,14 +10,21 @@ import com.hit.gamecalendar.main.java.dao.SqliteDatabase;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.hit.clock.main.java.Clock;
 
 public class Startup {
     public static SqliteDatabase db;
     public static Gson gson;
     public static Clock clock = new Clock();
+    public static AtomicBoolean isServerRunning = new AtomicBoolean(false);
+    public static AtomicBoolean isRunning = new AtomicBoolean(true);
+    private static CLI cli;
 
     public static void main(String[] args) {
         var argumentMap = getFormattedArgumentMap(args);
@@ -27,7 +34,7 @@ public class Startup {
         Startup.clock.start();
 
         Startup.setup();
-        Startup.run();
+        Startup.runCLI();
     }
     /**
      * Setup dependencies.
@@ -48,9 +55,9 @@ public class Startup {
         }
     }
 
-    private static void run() {
+    public static void runServer() {
         try {
-
+            isServerRunning.set(true);
             SocketDriver driver = new SocketDriver(Config.getServerPort());
             // Controller contexts
             SocketPathMaker.makePaths(driver);
@@ -58,6 +65,40 @@ public class Startup {
         } catch (Exception e) {
             Logger.logError("Server could not start, Exception: " + e);
         }
+    }
+
+    public static void closeServer() throws InterruptedException, IOException {
+        Startup.isServerRunning.set(false);
+        try {
+            SocketDriver.closeSocket();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        SocketDriver.threads.shutdown();
+        SocketDriver.threads.awaitTermination(1, TimeUnit.SECONDS);
+    }
+
+    private static void runCLI() {
+        cli = new CLI();
+        cli.start();
+    }
+
+    public static void shutdown() {
+        (new Thread(() -> {
+            try {
+                Startup.clock.stop();
+
+                if (isServerRunning.get()) {
+                    Startup.closeServer();
+                }
+
+                cli.scanner.close();
+                Startup.isRunning.set(false);
+                cli.thisThread.join();
+            } catch (Exception e) {
+                Logger.logError(e.toString());
+            }
+        })).start();
     }
 
     private static void setArgumentsConfig(Map<String, String> args) {

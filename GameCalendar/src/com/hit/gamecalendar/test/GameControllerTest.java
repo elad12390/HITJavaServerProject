@@ -145,7 +145,7 @@ public class GameControllerTest {
     }
 
     private SocketResponse getAllGames() throws IOException {
-        var request = new SocketRequest("GET", "/api/Game/", null, "Testing");
+        var request = new SocketRequest("GET", "/api/Game/", null, null);
         SocketExchange exchange = new SocketExchange(new Socket(clientAddress, port));
         exchange.send(request);
         return exchange.get(SocketResponse.class);

@@ -19,8 +19,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="StringMatchers" level="project" />
     <orderEntry type="module" module-name="Clock" />
     <orderEntry type="library" name="Clock" level="project" />
+    <orderEntry type="library" name="StringMatchers" level="project" />
   </component>
 </module>

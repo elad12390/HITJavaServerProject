@@ -1,5 +1,7 @@
 package com.hit.gamecalendar.main.java.api.socket;
 import com.hit.gamecalendar.main.java.api.Config;
+import com.hit.gamecalendar.main.java.api.Startup;
+import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketException;
 import com.hit.gamecalendar.main.java.api.socket.exceptions.SocketNotFoundException;
 import com.hit.gamecalendar.main.java.api.socket.responses.SocketResponseFactory;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
@@ -24,7 +26,7 @@ public class SocketDriver implements ISocketDriver {
 
     private static ServerSocket server;
 
-    private final ExecutorService threads = Executors.newCachedThreadPool();
+    public static ExecutorService threads;
 
     // path map
     private final SocketPathMap socketPaths = new SocketPathMap();
@@ -43,27 +45,31 @@ public class SocketDriver implements ISocketDriver {
         this.bindAddr = InetAddress.getLocalHost();
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void listen() {
         AtomicBoolean isFinished = new AtomicBoolean(false);
+        threads = Executors.newCachedThreadPool();
         threads.submit(() -> {
-            server = new ServerSocket(this.port);
-            Logger.logInformation("Running at " + this.getSocketAddress().getHostAddress() + ":" + this.getPort());
-            isFinished.set(true);
-            do {
-                Socket s = server.accept();
-                threads.submit(handleClientRequest(s));
-            } while (true);
+            try {
+                server = new ServerSocket(this.port);
+                Logger.logInformation("Running at " + this.getSocketAddress().getHostAddress() + ":" + this.getPort());
+                isFinished.set(true);
+                do {
+                    Socket s = server.accept();
+                    threads.submit(handleClientRequest(s));
+                } while (Startup.isRunning.get());
+            } catch (IOException e) {
+                if (!e.getMessage().equals("Socket closed"))
+                    e.printStackTrace();
+            }
         });
 
         while(!isFinished.get());
     }
 
-    private Runnable handleClientRequest(Socket s) {
+    public Runnable handleClientRequest(Socket s) {
         return () -> {
             SocketExchange exchange;
-
             try {
                 exchange = new SocketExchange(s);
             } catch (IOException e) {
@@ -98,6 +104,10 @@ public class SocketDriver implements ISocketDriver {
                 exchange.close();
             }
         };
+    }
+
+    public static void closeSocket() throws IOException {
+        server.close();
     }
 
     public void createPath(String path, ISocketHandler handler) throws SocketPathAlreadyExistsException {
