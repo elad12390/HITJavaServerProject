@@ -1,19 +1,13 @@
 package com.hit.gamecalendar.main.java.api;
 
-import com.google.gson.JsonObject;
-import com.hit.gamecalendar.main.java.api.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.SocketExchange;
 import com.hit.gamecalendar.main.java.api.socket.requests.SocketRequest;
 import com.hit.gamecalendar.main.java.api.socket.responses.SocketResponse;
 import com.hit.gamecalendar.main.java.common.logger.Logger;
-import org.junit.runner.Request;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class CLI implements Runnable {
 
@@ -21,11 +15,11 @@ public class CLI implements Runnable {
             "\n\tstart - starts the server" +
             "\n\tstop - stops the server" +
             "\n\tsend [JSON] - sends the [JSON] to the server and presents the result - for example send {\"method\":\"GET\",\"path\":\"/api/Game/\"}" +
+            "\n\texit - exits this program" +
             "\n\thelp - print this menu";
 
-
     Scanner scanner = new Scanner(System.in);
-    Thread thisThread;
+
     public void run() {
         System.out.println(HELP_TEXT);
         while (Startup.isRunning.get()) {
@@ -62,7 +56,7 @@ public class CLI implements Runnable {
                 }
                 break;
             case "exit":
-                Startup.threads.submit(Startup::shutdown);
+                Startup.mainThreads.submit(Startup::shutdown);
                 Startup.isRunning.set(false);
                 break;
             case "help":
@@ -75,7 +69,7 @@ public class CLI implements Runnable {
                     var reqObj = getRequestFromJsonOrNull(json);
                     if (reqObj != null) {
                         if (Startup.isServerRunning.get()) {
-                            Startup.threads.submit(() -> {
+                            Startup.mainThreads.submit(() -> {
                                 SocketExchange exchange = null;
                                 try {
                                     exchange = new SocketExchange(new Socket(Config.getClientAddress(), Config.getServerPort()));
@@ -91,7 +85,6 @@ public class CLI implements Runnable {
                                 }
                                 finally {
                                     exchange.close();
-
                                 }
                             });
                         } else {

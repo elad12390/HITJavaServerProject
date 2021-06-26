@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hit.gamecalendar.main.java.api.socket.SocketDriver;
 import com.hit.gamecalendar.main.java.api.socket.pathmaker.SocketPathMaker;
-import com.hit.gamecalendar.main.java.common.cache.Cache;
 import com.hit.gamecalendar.main.java.dao.GameType;
 import com.hit.gamecalendar.main.java.dao.GameTypeDeserializer;
 import com.hit.gamecalendar.main.java.dao.SqliteDatabase;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hit.clock.main.java.Clock;
@@ -28,7 +26,7 @@ public class Startup {
     public static AtomicBoolean isServerRunning = new AtomicBoolean(false);
     public static AtomicBoolean isRunning = new AtomicBoolean(true);
     private static CLI cli;
-    public static ExecutorService threads = Executors.newCachedThreadPool();
+    public static ExecutorService mainThreads = Executors.newCachedThreadPool();
 
 
     public static void main(String[] args) {
@@ -36,7 +34,7 @@ public class Startup {
         setArgumentsConfig(argumentMap);
 
         // NISSIM THIS IS WHERE I START IT BECAUSE MY SERVICE IS SCOPED
-        Startup.clock.start();
+        mainThreads.submit(Startup.clock);
 
         Startup.setup();
         Startup.runCLI();
@@ -46,7 +44,6 @@ public class Startup {
      * */
     private static void setup() {
         try {
-
             Logger.setLoggingLevel(Config.getLoggingLevel());
             var dbFilePath = (new File(Config.getDatabaseFilePath())).getAbsolutePath();
             Startup.db = new SqliteDatabase("jdbc:sqlite:" + dbFilePath);
@@ -79,24 +76,22 @@ public class Startup {
         } catch (Exception e) {
             System.out.println(e);
         }
-        SocketDriver.threads.shutdownNow();
+        SocketDriver.threads.shutdown();
     }
 
     private static void runCLI() {
         cli = new CLI();
-        threads.submit(cli);
+        mainThreads.submit(cli);
     }
 
     public static void shutdown() {
         try {
-            Startup.clock.stop();
-
             if (isServerRunning.get()) {
                 Startup.closeServer();
             }
 
             cli.scanner.close();
-            Startup.threads.shutdownNow();
+            Startup.mainThreads.shutdown();
         } catch (Exception e) {
             Logger.logError(e.toString());
         }
